@@ -15,7 +15,7 @@ export default function App() {
       if (status === null) {
         await AsyncStorage.setItem('hasOnboarded', 'false');
       }
-      setHasOnboarded(true);
+      setHasOnboarded(false);
       setIsLoading(false);
     };
 
