@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-
+import Icon from 'react-native-vector-icons/Ionicons';
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
@@ -22,10 +22,24 @@ export default function HomeScreen() {
         </TouchableOpacity>
 
         <View style={styles.navRight}>
-          <TouchableOpacity style={styles.navRightNotification}></TouchableOpacity>
-          <View style={styles.navRightMenu}></View>
+          <TouchableOpacity style={styles.navRightNotification}>
+            <Icon name="notifications-outline" size={25} color="#6DB777" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.navRightMenu}>
+            <View style={styles.navRightBoxContainer}>
+              <View style={styles.navRightBox}></View>
+              <View style={styles.navRightBox}></View>
+            </View>
+            <View style={styles.navRightBoxContainer}>
+              <View style={styles.navRightBox}></View>
+              <View style={styles.navRightBox}></View>
+            </View>
+          </TouchableOpacity>
+
         </View>
       </View>
+
+      <View style={styles.contentContainer}></View>
     </View>
   );
 }
@@ -88,6 +102,32 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.3, // 그림자 투명도 (0 ~ 1)
     shadowRadius: 4, // 그림자 퍼짐 정도
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     
+  },
+  navRightMenu: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 2,
+    backgroundColor: '#6DB777',
+    borderRadius: 99,
+    width: 40,
+    height: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navRightBoxContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    gap: 2,
+  },
+  navRightBox: {
+    width: 10,
+    height: 10,
+    borderWidth: 2,
+    borderColor: '#fff',
+    borderRadius: 3,
   },
 });
