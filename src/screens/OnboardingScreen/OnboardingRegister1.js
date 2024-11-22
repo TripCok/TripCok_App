@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert } from 'react-native';
+import React, {useState} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, TextInput, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useDispatch } from 'react-redux';
-import { updateField } from '../../store/OnboardingRegisterSlice'; // Redux 액션 가져오기
+import {useDispatch} from 'react-redux';
+import {updateField} from '../../store/OnboardingRegisterSlice'; // Redux 액션 가져오기
 
-const OnboardingRegister1 = ({ navigation }) => {
+const OnboardingRegister1 = ({navigation}) => {
     const [email, setEmail] = useState(''); // 로컬 상태로 이메일 관리
     const dispatch = useDispatch();
 
@@ -15,14 +15,14 @@ const OnboardingRegister1 = ({ navigation }) => {
         }
 
         // Redux 상태 업데이트
-        dispatch(updateField({ field: 'email', value: email }));
+        dispatch(updateField({field: 'email', value: email}));
 
         // 알림 표시 및 다음 화면으로 이동
         Alert.alert(
             '알림',
             '인증 메시지를 전송했습니다.',
-            [{ text: '확인', onPress: () => navigation.navigate('OnboardingRegister2') }],
-            { cancelable: false }
+            [{text: '확인', onPress: () => navigation.navigate('OnboardingRegister2')}],
+            {cancelable: false}
         );
     };
 
@@ -35,7 +35,7 @@ const OnboardingRegister1 = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black" />
+                <Icon name="arrow-back-outline" size={40} color="black"/>
             </TouchableOpacity>
             <Text style={styles.title}>이메일을 입력해주세요.</Text>
 
@@ -48,7 +48,11 @@ const OnboardingRegister1 = ({ navigation }) => {
                 autoCapitalize="none"
             />
 
-            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+            <TouchableOpacity
+                style={[styles.nextButton, !email && {backgroundColor: '#ccc'}]}
+                onPress={handleNext}
+                disabled={!email}
+            >
                 <Text style={styles.nextButtonText}>다음</Text>
             </TouchableOpacity>
         </View>

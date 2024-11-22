@@ -1,18 +1,17 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useDispatch, useSelector} from 'react-redux';
-import {updateField} from '../../store/OnboardingRegisterSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateField } from '../../store/OnboardingRegisterSlice';
 
-const OnboardingRegister5 = ({navigation}) => {
+const OnboardingRegister5 = ({ navigation }) => {
     const dispatch = useDispatch();
     const phone = useSelector((state) => state.onboardingRegister.phone);
     const [localPhone, setLocalPhone] = useState(phone);
 
     const handlePhoneInput = (text) => {
-        // 숫자만 추출
-        const numericText = text.replace(/[^0-9]/g, '');
-        // 하이픈 추가
+        const numericText = text.replace(/[^0-9]/g, ''); // 숫자만 추출
+        if (numericText.length > 11) return; // 최대 11자리까지만 입력 허용
         const formattedPhone = formatPhoneNumber(numericText);
         setLocalPhone(formattedPhone);
     };
@@ -28,14 +27,15 @@ const OnboardingRegister5 = ({navigation}) => {
             alert('전화번호를 입력해주세요.');
             return;
         }
-        dispatch(updateField({field: 'phone', value: localPhone}));
+        console.log(`전화번호 : ${localPhone}`);
+        dispatch(updateField({ field: 'phone', value: localPhone }));
         navigation.navigate('OnboardingRegister6');
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black"/>
+                <Icon name="arrow-back-outline" size={40} color="black" />
             </TouchableOpacity>
             <Text style={styles.title}>휴대폰 번호를 입력해주세요.</Text>
 
@@ -44,10 +44,14 @@ const OnboardingRegister5 = ({navigation}) => {
                 placeholder="휴대폰 번호"
                 value={localPhone}
                 onChangeText={handlePhoneInput}
-                // keyboardType="numeric"
+                keyboardType="number-pad"
             />
 
-            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+            <TouchableOpacity
+                style={[styles.nextButton, !localPhone && { backgroundColor: '#ccc' }]}
+                onPress={handleNext}
+                disabled={!localPhone}
+            >
                 <Text style={styles.nextButtonText}>다음</Text>
             </TouchableOpacity>
         </View>

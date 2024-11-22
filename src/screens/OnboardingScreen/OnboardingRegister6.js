@@ -9,8 +9,8 @@ const OnboardingRegister6 = ({navigation}) => {
     const [birthdate, setBirthdate] = useState('');
 
     const formatDate = (text) => {
-        // 숫자만 남김
         const cleaned = text.replace(/[^0-9]/g, '');
+        // const cleaned = text;
         if (cleaned.length <= 4) {
             return cleaned;
         } else if (cleaned.length <= 6) {
@@ -25,11 +25,9 @@ const OnboardingRegister6 = ({navigation}) => {
             Alert.alert('오류', '유효한 날짜 형식(YYYY-MM-DD)으로 입력해주세요.');
             return;
         }
-
-        // Redux에 저장
+        console.log(`생년월일 : ${birthdate}`);
         dispatch(updateField({field: 'birthdate', value: birthdate}));
 
-        // 다음 화면으로 이동
         navigation.navigate('OnboardingRegister7');
     };
 
@@ -50,7 +48,11 @@ const OnboardingRegister6 = ({navigation}) => {
                 maxLength={10} // YYYY-MM-DD 형식 길이 제한
             />
 
-            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+            <TouchableOpacity
+                style={[styles.nextButton, !birthdate && {backgroundColor: '#ccc'}]}
+                onPress={handleNext}
+                disabled={!birthdate}
+            >
                 <Text style={styles.nextButtonText}>다음</Text>
             </TouchableOpacity>
         </View>

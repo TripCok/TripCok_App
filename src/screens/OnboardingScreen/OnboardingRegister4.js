@@ -14,7 +14,7 @@ const OnboardingRegister4 = ({navigation}) => {
             alert('비밀번호를 입력해주세요.');
             return;
         }
-        alert(localPassword);
+        console.log(`비밀번호 : ${localPassword}`);
         dispatch(updateField({field: 'password', value: localPassword}));
         navigation.navigate('OnboardingRegister5');
     };
@@ -32,7 +32,11 @@ const OnboardingRegister4 = ({navigation}) => {
                        onChangeText={setLocalPassword}
                        placeholder="비밀번호"/>
 
-            <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
+            <TouchableOpacity
+                style={[styles.nextButton, !localPassword && {backgroundColor: '#ccc'}]}
+                onPress={handleNext}
+                disabled={!localPassword}
+            >
                 <Text style={styles.nextButtonText}>다음</Text>
             </TouchableOpacity>
 
