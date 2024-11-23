@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
         height: 50,
         left: "30",
         position: 'absolute',
-        bottom: "40",
+        bottom: "5%",
     },
     nextButtonText: {
         color: '#fff',

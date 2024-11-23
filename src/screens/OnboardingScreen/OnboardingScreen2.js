@@ -28,6 +28,8 @@ const OnboardingScreen2 = ({navigation}) => {
                     즐거운 여행이 되기를 기원합니다
                     {"\n"}오늘부터 #트립콕
                 </Text>
+            </View>
+            <View style={styles.contentNavigation}>
                 <TouchableOpacity style={styles.button}
                                   onPress={() => navigation.navigate('OnboardingLogin')}>
                     <Text style={styles.buttonText}>로그인</Text>
@@ -51,6 +53,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative',
     },
     imageContainer: {
         alignItems: 'center',
@@ -111,4 +114,14 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: '500',
     },
+    contentNavigation: {
+        position: 'absolute',
+        flex: 1,
+        width: '100%',
+        paddingLeft: 30,
+        paddingRight: 30,
+        bottom: '5%'
+
+    }
+
 });

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateField } from '../../store/OnboardingRegisterSlice';
+import {useDispatch, useSelector} from 'react-redux';
+import {updateField} from '../../store/OnboardingRegisterSlice';
 
-const OnboardingRegister5 = ({ navigation }) => {
+const OnboardingRegister5 = ({navigation}) => {
     const dispatch = useDispatch();
     const phone = useSelector((state) => state.onboardingRegister.phone);
     const [localPhone, setLocalPhone] = useState(phone);
@@ -28,14 +28,14 @@ const OnboardingRegister5 = ({ navigation }) => {
             return;
         }
         console.log(`전화번호 : ${localPhone}`);
-        dispatch(updateField({ field: 'phone', value: localPhone }));
+        dispatch(updateField({field: 'phone', value: localPhone}));
         navigation.navigate('OnboardingRegister6');
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black" />
+                <Icon name="arrow-back-outline" size={40} color="black"/>
             </TouchableOpacity>
             <Text style={styles.title}>휴대폰 번호를 입력해주세요.</Text>
 
@@ -44,11 +44,10 @@ const OnboardingRegister5 = ({ navigation }) => {
                 placeholder="휴대폰 번호"
                 value={localPhone}
                 onChangeText={handlePhoneInput}
-                keyboardType="number-pad"
             />
 
             <TouchableOpacity
-                style={[styles.nextButton, !localPhone && { backgroundColor: '#ccc' }]}
+                style={[styles.nextButton, !localPhone && {backgroundColor: '#ccc'}]}
                 onPress={handleNext}
                 disabled={!localPhone}
             >

@@ -10,7 +10,6 @@ const OnboardingRegister6 = ({navigation}) => {
 
     const formatDate = (text) => {
         const cleaned = text.replace(/[^0-9]/g, '');
-        // const cleaned = text;
         if (cleaned.length <= 4) {
             return cleaned;
         } else if (cleaned.length <= 6) {
@@ -43,9 +42,9 @@ const OnboardingRegister6 = ({navigation}) => {
                 style={styles.input}
                 placeholder="YYYY-MM-DD"
                 value={birthdate}
-                onChangeText={(text) => setBirthdate(formatDate(text))} // 자동 하이픈 추가
-                keyboardType="number-pad"
-                maxLength={10} // YYYY-MM-DD 형식 길이 제한
+                onChangeText={(text) => setBirthdate(formatDate(text))}
+                // keyboardType="number-pad"
+                maxLength={10}
             />
 
             <TouchableOpacity

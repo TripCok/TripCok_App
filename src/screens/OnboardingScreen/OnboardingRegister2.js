@@ -1,10 +1,15 @@
-import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, {useRef, useState} from 'react';
+import {StyleSheet, Text, TextInput, TouchableOpacity, View, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
+import api from '../../api/api';
 
-const OnboardingRegister2 = ({ navigation }) => {
+const OnboardingRegister2 = ({navigation, route}) => {
+    const { email } = route.params; // 이메일을 이전 화면에서 전달받음
     const [inputs, setInputs] = useState(['', '', '', '']);
     const inputRefs = useRef([]);
+    const [isFailed, setIsFailed] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [resending, setResending] = useState(false);
 
     const handleInputChange = (text, index) => {
         const updatedInputs = [...inputs];
@@ -24,17 +29,52 @@ const OnboardingRegister2 = ({ navigation }) => {
 
     const isAllInputsFilled = inputs.every((input) => input !== '');
 
-    const handleConfirm = () => {
-        if (isAllInputsFilled) {
-            console.log(`인증번호: ${inputs.join('')}`);
-            navigation.navigate('OnboardingRegister3');
+    const handleConfirm = async () => {
+        if (!isAllInputsFilled) return;
+
+        const code = inputs.join('');
+        setLoading(true);
+        try {
+            const response = await api.get('/member/register/email/check', {
+                params: { email, code },
+            });
+
+            if (response.status === 200) {
+                Alert.alert('성공', '인증이 완료되었습니다.');
+                navigation.navigate('OnboardingRegister3');
+            }
+        } catch (error) {
+            if (error.response) {
+                setIsFailed(true);
+            } else {
+                Alert.alert('오류', '잠시후 다시 시도 해주세요.');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const retrySendCode = async () => {
+        setIsFailed(false);
+        setInputs(['', '', '', '']);
+        setResending(true);
+
+        try {
+            const response = await api.get(`/member/register/${email}`);
+            if (response.status === 200) {
+                Alert.alert('성공', '인증 코드가 다시 전송되었습니다.');
+            }
+        } catch (error) {
+            Alert.alert('오류', '인증 코드를 다시 전송하는 데 실패했습니다.');
+        } finally {
+            setResending(false);
         }
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black" />
+                <Icon name="arrow-back-outline" size={40} color="black"/>
             </TouchableOpacity>
             <Text style={styles.title}>인증번호를 입력해주세요.</Text>
 
@@ -45,20 +85,29 @@ const OnboardingRegister2 = ({ navigation }) => {
                         style={styles.input}
                         value={inputs[index]}
                         onChangeText={(text) => handleInputChange(text, index)}
-                        keyboardType="number-pad"
                         maxLength={1} // 한 글자만 입력
                         ref={(el) => (inputRefs.current[index] = el)} // ref 설정
                         onKeyPress={(e) => handleKeyPress(e, index)} // Backspace 처리
                     />
                 ))}
             </View>
+            {isFailed && (
+                <View style={styles.failCommentBox}>
+                    <Text style={styles.failComment}>인증 번호를 다시 확인해주세요.</Text>
+                    <TouchableOpacity onPress={retrySendCode} disabled={resending}>
+                        <Text style={[styles.retryBtn, resending && {color: '#ccc'}]}>
+                            {resending ? '재전송 중...' : '재전송'}
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+            )}
 
             <TouchableOpacity
-                style={[styles.nextButton, !isAllInputsFilled && { backgroundColor: '#ccc' }]}
+                style={[styles.nextButton, (!isAllInputsFilled || loading) && {backgroundColor: '#ccc'}]}
                 onPress={handleConfirm}
-                disabled={!isAllInputsFilled} // 입력이 다 안되면 비활성화
+                disabled={!isAllInputsFilled || loading} // 입력이 다 안되면 비활성화
             >
-                <Text style={styles.nextButtonText}>확인</Text>
+                <Text style={styles.nextButtonText}>{loading ? '확인 중...' : '확인'}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -82,7 +131,6 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
     inputContainer: {
-        flex: 1,
         justifyContent: 'space-between',
         display: 'flex',
         flexDirection: 'row',
@@ -97,7 +145,15 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         textAlign: 'center',
     },
+    failCommentBox: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
     nextButton: {
+        marginLeft:30,
         width: '100%',
         display: 'flex',
         justifyContent: 'center',
@@ -105,13 +161,18 @@ const styles = StyleSheet.create({
         backgroundColor: '#6DB777',
         borderRadius: 10,
         height: 50,
-        left: "30",
         position: 'absolute',
-        bottom: "40",
+        bottom: "5%",
     },
     nextButtonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: 600,
+        fontWeight: 'bold',
+    },
+    retryBtn: {
+        color: '#FA6060',
+    },
+    failComment: {
+        color: '#FA6060',
     },
 });

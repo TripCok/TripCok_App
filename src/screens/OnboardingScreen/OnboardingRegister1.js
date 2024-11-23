@@ -1,29 +1,46 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, TextInput, Alert} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {useDispatch} from 'react-redux';
 import {updateField} from '../../store/OnboardingRegisterSlice'; // Redux 액션 가져오기
+import api from '../../api/api';
 
 const OnboardingRegister1 = ({navigation}) => {
     const [email, setEmail] = useState(''); // 로컬 상태로 이메일 관리
     const dispatch = useDispatch();
+    const [isValidEmail, setValidEmail] = useState(true);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleNext = () => {
+    const handleNext = async () => {
         if (!email || !validateEmail(email)) {
-            Alert.alert('오류', '올바른 이메일 주소를 입력하세요.');
+            setValidEmail(false);
+            setErrorMessage('올바른 이메일 주소를 입력하세요.');
             return;
         }
 
-        // Redux 상태 업데이트
-        dispatch(updateField({field: 'email', value: email}));
+        setValidEmail(true);
+        setErrorMessage('');
 
-        // 알림 표시 및 다음 화면으로 이동
-        Alert.alert(
-            '알림',
-            '인증 메시지를 전송했습니다.',
-            [{text: '확인', onPress: () => navigation.navigate('OnboardingRegister2')}],
-            {cancelable: false}
-        );
+        try {
+            setLoading(true);
+            const response = await api.get(`/member/register/${email}`);
+
+            if (response.status === 200) {
+                dispatch(updateField({field: 'email', value: email}));
+
+                setErrorMessage('');
+                navigation.navigate('OnboardingRegister2', { email }); // 이메일 전달
+            }
+        } catch (error) {
+            if (error.response) {
+                setErrorMessage('인증 메시지 전송에 실패했습니다.');
+            } else {
+                setErrorMessage('네트워크 연결에 문제가 발생했습니다.');
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
     // 이메일 유효성 검사 함수
@@ -47,20 +64,22 @@ const OnboardingRegister1 = ({navigation}) => {
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
+            {!isValidEmail || errorMessage ? (
+                <Text style={styles.failValid}>{errorMessage}</Text>
+            ) : null}
 
             <TouchableOpacity
-                style={[styles.nextButton, !email && {backgroundColor: '#ccc'}]}
+                style={[styles.nextButton, (!email || loading) && {backgroundColor: '#ccc'}]}
                 onPress={handleNext}
-                disabled={!email}
+                disabled={!email || loading}
             >
-                <Text style={styles.nextButtonText}>다음</Text>
+                <Text style={styles.nextButtonText}>{loading ? '전송 중...' : '다음'}</Text>
             </TouchableOpacity>
         </View>
     );
 };
 
 export default OnboardingRegister1;
-
 
 const styles = StyleSheet.create({
     container: {
@@ -94,11 +113,13 @@ const styles = StyleSheet.create({
         height: 50,
         left: "30",
         position: 'absolute',
-        bottom: "40",
+        bottom: "5%",
     },
     nextButtonText: {
         color: '#fff',
         fontSize: 16,
         fontWeight: 600,
     },
+    failValid: {
+        color: '#FA6060'}
 });
