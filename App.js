@@ -14,10 +14,10 @@ export default function App() {
         const checkOnboardingStatus = async () => {
             try {
                 const status = await AsyncStorage.getItem('hasOnboarded');
-                console.log('Onboarding Status:', status);
+                console.log('온보딩 상태:', status);
                 setHasOnboarded(status === 'true');
             } catch (error) {
-                console.error('Error loading onboarding status:', error);
+                console.error('온보딩 상태 에러:', error);
             } finally {
                 setIsLoading(false); // 로딩 완료
             }
@@ -27,10 +27,9 @@ export default function App() {
     }, []);
 
     if (isLoading) {
-        // 로딩 중 화면
         return (
             <View style={styles.container}>
-                <Text>Loading...</Text>
+                {/*<Text>Loading...</Text>*/}
             </View>
         );
     }

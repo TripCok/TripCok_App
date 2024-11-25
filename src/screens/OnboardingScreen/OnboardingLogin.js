@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, Text, TextInput, TouchableOpacity, View, Alert} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import api from '../../api/api';
-import { useDispatch } from 'react-redux';
-import { setOnboarded } from '../../store/onboardingSlice';
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {useDispatch} from 'react-redux';
+import {setOnboarded} from '../../store/onboardingSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OnboardingLogin = ({ navigation }) => {
+const OnboardingLogin = ({navigation}) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
+    const [loading, setLoading] = useState(false);
     const dispatch = useDispatch();
 
     const validateEmail = (email) => {
@@ -38,33 +39,37 @@ const OnboardingLogin = ({ navigation }) => {
         if (hasError) return;
 
         try {
-            const response = await api.put('/member/login', { // 공통 baseURL 사용
-                email,
-                password,
-            });
+            setLoading(true);
+            const response = await api.put('/member/login', {email, password});
 
             if (response.status === 200) {
-                await AsyncStorage.setItem('hasOnboarded', 'true'); // 상태 저장
+                const userData = response.data;
+
+                console.log('API 응답 데이터:', userData); // API에서 어떤 데이터가 오는지 확인
+                await AsyncStorage.setItem('userData', JSON.stringify(userData));
+
+                // Redux 상태 업데이트
                 dispatch(setOnboarded(true));
 
+                Alert.alert('로그인 성공', '로그인에 성공했습니다.');
             }
         } catch (error) {
             if (error.response) {
-                // 서버가 응답했을 경우
                 Alert.alert('로그인 실패', error.response.data.message || '이메일 또는 비밀번호가 올바르지 않습니다.');
                 setEmailError('이메일 또는 비밀번호가 올바르지 않습니다.');
                 setPasswordError('이메일 또는 비밀번호가 올바르지 않습니다.');
             } else {
-                // 네트워크 오류 등 기타 이유
                 Alert.alert('오류 발생', '네트워크 오류가 발생했습니다.');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black" />
+                <Icon name="arrow-back-outline" size={40} color="black"/>
             </TouchableOpacity>
 
             <Text style={styles.title}>로그인을 진행해주세요.</Text>
@@ -94,8 +99,12 @@ const OnboardingLogin = ({ navigation }) => {
             />
             {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-            <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-                <Text style={styles.loginButtonText}>로그인</Text>
+            <TouchableOpacity
+                style={[styles.loginButton, loading && {backgroundColor: '#ccc'}]}
+                onPress={handleLogin}
+                disabled={loading}
+            >
+                <Text style={styles.loginButtonText}>{loading ? '로그인 중...' : '로그인'}</Text>
             </TouchableOpacity>
         </View>
     );
