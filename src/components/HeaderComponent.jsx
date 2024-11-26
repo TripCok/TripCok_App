@@ -1,54 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import {Platform, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useRef} from 'react';
+import {Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import ProfileModalComponent from "../components/profile/ProfileModalComponent"; // 모달 컴포넌트 가져오기
 
-const HomeScreen = ({navigation}) => {
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true); // 로딩 상태 추가
 
-    const loadUserData = async () => {
-        try {
-            const storedData = await AsyncStorage.getItem('userData');
-            console.log('저장된 데이터:', storedData); // 저장된 데이터를 확인
+export const HeaderComponent = ({navigation, userData}) => {
+    const modalizeRef = useRef(null);
 
-            if (storedData) {
-                const parsedData = JSON.parse(storedData);
-                console.log('파싱된 사용자 데이터:', parsedData); // 파싱된 데이터를 확인
-                setUserData(parsedData);
-            }
-        } catch (error) {
-            console.error('데이터 로드 실패:', error);
-        } finally {
-            setLoading(false);
-        }
+    // 모달 열기
+    const openProfileModal = () => {
+        modalizeRef.current?.open();
     };
-
-
-    useEffect(() => {
-        loadUserData();
-    }, []);
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#6DB777"/>
-            </View>
-        );
-    }
-
-    if (!userData) {
-        return (
-            <View style={styles.container}>
-                <Text>사용자 데이터를 불러올 수 없습니다. 다시 시도해주세요.</Text>
-            </View>
-        );
-    }
-
     return (
-        <View style={styles.container}>
+        <>
             <View style={styles.navContainer}>
-                <TouchableOpacity>
+                <TouchableOpacity style={styles.navLeftMenu} onPress={openProfileModal}>
                     <View style={styles.navLeft}>
                         <View style={styles.navLeftIcon}></View>
                         <View style={styles.navLeftText}>
@@ -57,7 +23,6 @@ const HomeScreen = ({navigation}) => {
                         </View>
                     </View>
                 </TouchableOpacity>
-
                 <View style={styles.navRight}>
                     <TouchableOpacity style={styles.navRightNotification}>
                         <Icon name="notifications-outline" size={25} color="#6DB777"/>
@@ -77,41 +42,26 @@ const HomeScreen = ({navigation}) => {
                     </TouchableOpacity>
                 </View>
             </View>
+            <ProfileModalComponent ref={modalizeRef}/>
 
-            <View style={styles.contentContainer}>
-                <Text>이달의 여행지</Text>
-            </View>
-        </View>
+        </>
     );
 };
 
-export default HomeScreen;
+export default HeaderComponent;
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-    },
+
     navContainer: {
-        ...Platform.select({
-            ios: {
-                marginTop: 60,
-            },
-            android: {
-                marginTop: 50,
-            },
-        }),
+        marginTop: Platform.OS === 'ios' ? 60 : 50,
+
         paddingLeft: 20,
         paddingRight: 20,
+        paddingBottom: 20,
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        zIndex: 0
     },
     navLeft: {
         flexDirection: 'row',
@@ -178,8 +128,4 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
         borderRadius: 3,
     },
-    contentContainer: {
-        flex: 1,
-        padding: 20,
-    },
-});
+})

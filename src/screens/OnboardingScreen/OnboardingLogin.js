@@ -48,7 +48,6 @@ const OnboardingLogin = ({navigation}) => {
                 console.log('API 응답 데이터:', userData); // API에서 어떤 데이터가 오는지 확인
                 await AsyncStorage.setItem('userData', JSON.stringify(userData));
 
-                // Redux 상태 업데이트
                 dispatch(setOnboarded(true));
 
                 Alert.alert('로그인 성공', '로그인에 성공했습니다.');
