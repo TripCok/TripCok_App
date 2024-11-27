@@ -45,6 +45,7 @@ const UserProvider = ({ children }) => {
         }
     };
 
+
     if (loading) {
         // 로딩 상태 처리
         return null; // 또는 로딩 스피너를 추가할 수 있음

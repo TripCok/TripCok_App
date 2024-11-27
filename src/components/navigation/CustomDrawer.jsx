@@ -1,10 +1,10 @@
-import React, { useContext } from "react";
-import { StyleSheet, Text, View, TouchableOpacity, Image, Alert } from "react-native";
-import { UserContext } from "../../context/UserContext";
+import React, {useContext} from "react";
+import {StyleSheet, Text, View, TouchableOpacity, Image, Alert} from "react-native";
+import {UserContext} from "../../context/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const CustomDrawer = ({ navigation }) => {
-    const { userData, setUserData, setHasOnboarded } = useContext(UserContext);
+const CustomDrawer = ({navigation}) => {
+    const {userData, setUserData, setHasOnboarded} = useContext(UserContext);
 
     const handleLogout = async () => {
         Alert.alert(
@@ -19,16 +19,12 @@ const CustomDrawer = ({ navigation }) => {
                     text: "로그아웃",
                     onPress: async () => {
                         try {
-                            await AsyncStorage.clear();
-                            setHasOnboarded(false);
-                            setUserData(null);
 
-                            setTimeout(() => {
-                                navigation.reset({
-                                    index: 0,
-                                    routes: [{ name: "Onboarding" }],
-                                });
-                            }, 100);
+                            await AsyncStorage.clear();
+                            setUserData(null);
+                            setHasOnboarded(false);
+
+
                         } catch (error) {
                             Alert.alert("오류", "로그아웃에 실패했습니다.");
                         }
@@ -44,7 +40,7 @@ const CustomDrawer = ({ navigation }) => {
             {/* 프로필 섹션 */}
             <View style={styles.profileContainer}>
                 <Image
-                    source={{ uri: userData?.profileImage || "https://via.placeholder.com/50" }}
+                    source={{uri: userData?.profileImage || "https://via.placeholder.com/50"}}
                     style={styles.profileImage}
                 />
                 <View>
