@@ -42,7 +42,6 @@ const OnboardingRegister2 = ({ navigation, route }) => {
             });
 
             if (response.status === 200) {
-                setUserData((prev) => ({ ...prev, isVerified: true }));
                 Alert.alert('성공', '인증이 완료되었습니다.');
                 navigation.navigate('OnboardingRegister3');
             }

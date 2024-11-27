@@ -1,26 +1,27 @@
-import React, { useState, useContext } from 'react';
-import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import React, {useContext, useState} from 'react';
+import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { UserContext } from '../../context/UserContext';
+import {OnboardingContext} from "../../context/OnboardingContext";
 
-const OnboardingRegister3 = ({ navigation }) => {
-    const { userData, setUserData } = useContext(UserContext);
-    const [localName, setLocalName] = useState(userData?.name || ''); // Initialize with existing data or empty string
+const OnboardingRegister3 = ({navigation}) => {
+    const [localName, setLocalName] = useState('');
+    const {updateOnboardingData} = useContext(OnboardingContext); // OnboardingContext 사용
+
 
     const handleNext = () => {
-        if (!localName) {
-            Alert.alert('오류', '이름을 입력해주세요.');
+        if (!localName.trim()) {
+            Alert.alert("오류", "이름을 입력해주세요.");
             return;
         }
 
-        setUserData({ ...userData, name: localName }); // Update name in context
-        navigation.navigate('OnboardingRegister4');
+        updateOnboardingData("name", localName.trim()); // 공백 제거 후 저장
+        navigation.navigate("OnboardingRegister4");
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black" />
+                <Icon name="arrow-back-outline" size={40} color="black"/>
             </TouchableOpacity>
             <Text style={styles.title}>이름을 입력해주세요.</Text>
 
@@ -32,7 +33,7 @@ const OnboardingRegister3 = ({ navigation }) => {
             />
 
             <TouchableOpacity
-                style={[styles.nextButton, !localName && { backgroundColor: '#ccc' }]}
+                style={[styles.nextButton, !localName && {backgroundColor: '#ccc'}]}
                 onPress={handleNext}
                 disabled={!localName}
             >

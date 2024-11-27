@@ -1,24 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { UserContext } from "./UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ActivityIndicator, View, StyleSheet } from "react-native";
 
 const UserProvider = ({ children }) => {
-    const [userData, setUserData] = useState(null);
-    const [hasOnboarded, setHasOnboarded] = useState(false);
-    const [loading, setLoading] = useState(true); // 데이터 로드 상태 추가
+    const [userData, setUserData] = useState(null); // 사용자 데이터 상태
+    const [hasOnboarded, setHasOnboarded] = useState(false); // 온보딩 여부 상태
+    const [loading, setLoading] = useState(true); // 데이터 로딩 상태
 
     useEffect(() => {
         const loadUserData = async () => {
             try {
                 const storedData = await AsyncStorage.getItem("userData");
-                if (storedData === null) {
+                if (storedData) {
                     setUserData(JSON.parse(storedData));
                     setHasOnboarded(true);
+                } else {
+                    setUserData(null);
+                    setHasOnboarded(false);
                 }
             } catch (error) {
-                console.error("Failed to load user data:", error);
+                console.error("Error loading user data:", error);
             } finally {
-                setLoading(false); // 데이터 로드 완료
+                setLoading(false); // 로딩 완료
             }
         };
 
@@ -27,11 +31,13 @@ const UserProvider = ({ children }) => {
 
     const saveUserData = async (data) => {
         try {
+            if (!data || typeof data !== "object" || Object.keys(data).length === 0) {
+                throw new Error("Invalid user data: cannot save null or empty data.");
+            }
             await AsyncStorage.setItem("userData", JSON.stringify(data));
             setUserData(data);
-            setHasOnboarded(true); // 데이터 저장 시 온보딩 완료로 설정
         } catch (error) {
-            console.error("Failed to save user data:", error);
+            console.error("Error saving user data:", error);
         }
     };
 
@@ -41,14 +47,17 @@ const UserProvider = ({ children }) => {
             setUserData(null);
             setHasOnboarded(false);
         } catch (error) {
-            console.error("Failed to clear user data:", error);
+            console.error("Error clearing user data:", error);
         }
     };
 
-
     if (loading) {
-        // 로딩 상태 처리
-        return null; // 또는 로딩 스피너를 추가할 수 있음
+        // 로딩 상태 처리 (스피너 표시)
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#6DB777" />
+            </View>
+        );
     }
 
     return (
@@ -65,5 +74,14 @@ const UserProvider = ({ children }) => {
         </UserContext.Provider>
     );
 };
+
+const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff",
+    },
+});
 
 export default UserProvider;

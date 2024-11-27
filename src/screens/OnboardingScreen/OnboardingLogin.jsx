@@ -3,6 +3,7 @@ import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndi
 import {UserContext} from "../../context/UserContext";
 import api from "../../api/api";
 import Icon from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const OnboardingLogin = ({navigation}) => {
     const {setUserData, setHasOnboarded} = useContext(UserContext);
@@ -41,6 +42,7 @@ const OnboardingLogin = ({navigation}) => {
 
             if (response.status === 200) {
                 const userData = response.data;
+                await AsyncStorage.setItem("userData", JSON.stringify(userData));
                 setUserData(userData);
                 setHasOnboarded(true);
 

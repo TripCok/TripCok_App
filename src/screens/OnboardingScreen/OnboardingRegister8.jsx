@@ -1,12 +1,15 @@
 import React, {useState, useContext} from 'react';
 import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {UserContext} from '../../context/UserContext';
+import {OnboardingContext} from '../../context/OnboardingContext';
+import {UserContext} from "../../context/UserContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import api from '../../api/api';
 
 const OnboardingRegister8 = ({navigation}) => {
-    const {userData, setUserData} = useContext(UserContext);
-    const [address, setAddress] = useState(userData?.address || '');
+    const {onboardingData, updateOnboardingData} = useContext(OnboardingContext);
+    const {setUserData, setHasOnboarded} = useContext(UserContext);
+    const [address, setAddress] = useState(onboardingData?.address || '');
     const [isLoading, setIsLoading] = useState(false);
 
     const handleNext = async () => {
@@ -15,15 +18,19 @@ const OnboardingRegister8 = ({navigation}) => {
             return;
         }
 
-        setUserData({...userData, address});
+        updateOnboardingData('address', address);
 
         setIsLoading(true);
         try {
-            const response = await api.post('/member/register', {...userData, address});
+            const response = await api.post('/member/register', {...onboardingData, address});
 
             if (response.status === 201) {
+                const userData = response.data;
+                await AsyncStorage.setItem('userData', JSON.stringify(userData));
+                setUserData(userData);
+                setHasOnboarded(true);
+
                 Alert.alert('회원가입 성공', '회원가입이 완료되었습니다.');
-                navigation.reset({index: 0, routes: [{name: 'Home'}]});
             }
         } catch (error) {
             Alert.alert('오류', '회원가입에 실패했습니다.');
@@ -59,6 +66,7 @@ const OnboardingRegister8 = ({navigation}) => {
 };
 
 export default OnboardingRegister8;
+
 
 const styles = StyleSheet.create({
     container: {

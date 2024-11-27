@@ -1,19 +1,28 @@
 import React, { useState, useContext } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { UserContext } from '../../context/UserContext';
+import { OnboardingContext } from '../../context/OnboardingContext';
 
 const OnboardingRegister7 = ({ navigation }) => {
-    const { userData, setUserData } = useContext(UserContext);
-    const [selectedGender, setSelectedGender] = useState(userData?.gender || null);
+    const { onboardingData, updateOnboardingData } = useContext(OnboardingContext);
+    const [selectedGender, setSelectedGender] = useState(onboardingData?.gender || null);
 
     const handleGenderSelect = (gender) => {
         setSelectedGender(gender);
     };
 
     const handleNext = () => {
-        setUserData({ ...userData, gender: selectedGender });
-        navigation.navigate('OnboardingRegister8');
+        if (!selectedGender) {
+            Alert.alert('오류', '성별을 선택해주세요.');
+            return;
+        }
+
+        try {
+            updateOnboardingData('gender', selectedGender);
+            navigation.navigate('OnboardingRegister8');
+        } catch (error) {
+            Alert.alert('오류', '성별 데이터를 저장하는 데 실패했습니다.');
+        }
     };
 
     return (

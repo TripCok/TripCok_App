@@ -1,17 +1,17 @@
-import React, {useState, useContext} from 'react';
-import {View, Text, StyleSheet, TextInput, TouchableOpacity, Alert} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {UserContext} from '../../context/UserContext';
-import api from '../../api/api';
+import React, {useContext, useState} from "react";
+import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import Icon from "react-native-vector-icons/Ionicons";
+import api from "../../api/api";
+import {OnboardingContext} from "../../context/OnboardingContext";
 
-const OnboardingRegister1 = ({navigation}) => {
-    const {setUserData} = useContext(UserContext); // Accessing UserContext
-    const [email, setEmail] = useState('');
+const OnboardingRegister1 = ({ navigation }) => {
+    const { updateOnboardingData } = useContext(OnboardingContext); // OnboardingContext 사용
+    const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
 
     const handleNext = async () => {
-        if (!email.includes('@')) {
-            Alert.alert('오류', '올바른 이메일 주소를 입력해주세요.');
+        if (!email.includes("@")) {
+            Alert.alert("오류", "올바른 이메일 주소를 입력해주세요.");
             return;
         }
 
@@ -19,11 +19,13 @@ const OnboardingRegister1 = ({navigation}) => {
             setLoading(true);
             const response = await api.get(`/member/register/${email}`);
             if (response.status === 200) {
-                setUserData((prev) => ({...prev, email})); // Update email in UserContext
-                navigation.navigate('OnboardingRegister2', {email});
+                updateOnboardingData("email", email); // 이메일 저장
+                navigation.navigate("OnboardingRegister2", { email });
+            } else {
+                Alert.alert("오류", response.data?.message || "이메일 인증에 실패했습니다.");
             }
         } catch (error) {
-            Alert.alert('오류', '이메일 인증에 실패했습니다.');
+            Alert.alert("오류", error.response?.data?.message || "네트워크 오류가 발생했습니다.");
         } finally {
             setLoading(false);
         }
@@ -32,7 +34,7 @@ const OnboardingRegister1 = ({navigation}) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black"/>
+                <Icon name="arrow-back-outline" size={40} color="black" />
             </TouchableOpacity>
             <Text style={styles.title}>이메일을 입력해주세요.</Text>
             <TextInput
@@ -42,13 +44,13 @@ const OnboardingRegister1 = ({navigation}) => {
                 onChangeText={setEmail}
             />
             <TouchableOpacity style={styles.nextButton} onPress={handleNext} disabled={loading}>
-                <Text style={styles.nextButtonText}>{loading ? '전송 중...' : '다음'}</Text>
+                <Text style={styles.nextButtonText}>{loading ? "전송 중..." : "다음"}</Text>
             </TouchableOpacity>
         </View>
     );
 };
-export default OnboardingRegister1;
 
+export default OnboardingRegister1;
 
 const styles = StyleSheet.create({
     container: {

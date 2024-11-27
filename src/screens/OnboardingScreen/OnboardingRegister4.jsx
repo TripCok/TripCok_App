@@ -1,19 +1,19 @@
 import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { UserContext } from '../../context/UserContext';
+import { OnboardingContext } from '../../context/OnboardingContext';
 
 const OnboardingRegister4 = ({ navigation }) => {
-    const { userData, setUserData } = useContext(UserContext);
-    const [localPassword, setLocalPassword] = useState(userData?.password || '');
+    const { onboardingData, updateOnboardingData } = useContext(OnboardingContext);
+    const [localPassword, setLocalPassword] = useState(onboardingData?.password || '');
 
     const handleNext = () => {
-        if (!localPassword) {
-            Alert.alert('오류', '비밀번호를 입력해주세요.');
+        if (!localPassword || localPassword.length < 6) {
+            Alert.alert('오류', '비밀번호는 최소 6자 이상이어야 합니다.');
             return;
         }
 
-        setUserData({ ...userData, password: localPassword }); // Update password in context
+        updateOnboardingData('password', localPassword);
         navigation.navigate('OnboardingRegister5');
     };
 
@@ -44,6 +44,7 @@ const OnboardingRegister4 = ({ navigation }) => {
 };
 
 export default OnboardingRegister4;
+
 
 const styles = StyleSheet.create({
     container: {

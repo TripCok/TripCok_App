@@ -1,27 +1,33 @@
 import React, { useState, useContext } from 'react';
 import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { UserContext } from '../../context/UserContext';
+import { OnboardingContext } from '../../context/OnboardingContext';
 
-const OnboardingRegister6 = ({ navigation }) => {
-    const { userData, setUserData } = useContext(UserContext);
-    const [birthdate, setBirthdate] = useState(userData?.birthdate || '');
+const OnboardingRegister5 = ({ navigation }) => {
+    const { onboardingData, updateOnboardingData } = useContext(OnboardingContext);
+    const [localPhone, setLocalPhone] = useState(onboardingData?.phone || '');
 
-    const formatDate = (text) => {
-        const cleaned = text.replace(/[^0-9]/g, '');
-        if (cleaned.length <= 4) return cleaned;
-        if (cleaned.length <= 6) return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
-        return `${cleaned.slice(0, 4)}-${cleaned.slice(4, 6)}-${cleaned.slice(6, 8)}`;
+    const handlePhoneInput = (text) => {
+        const numericText = text.replace(/[^0-9]/g, '');
+        if (numericText.length > 11) return;
+        const formattedPhone = formatPhoneNumber(numericText);
+        setLocalPhone(formattedPhone);
+    };
+
+    const formatPhoneNumber = (number) => {
+        if (number.length <= 3) return number;
+        if (number.length <= 7) return `${number.slice(0, 3)}-${number.slice(3)}`;
+        return `${number.slice(0, 3)}-${number.slice(3, 7)}-${number.slice(7)}`;
     };
 
     const handleNext = () => {
-        if (!birthdate || !/^\d{4}-\d{2}-\d{2}$/.test(birthdate)) {
-            Alert.alert('오류', '유효한 날짜 형식(YYYY-MM-DD)으로 입력해주세요.');
+        if (!localPhone || localPhone.length < 10) {
+            Alert.alert('오류', '유효한 전화번호를 입력해주세요.');
             return;
         }
 
-        setUserData({ ...userData, birthdate });
-        navigation.navigate('OnboardingRegister7');
+        updateOnboardingData('phone', localPhone);
+        navigation.navigate('OnboardingRegister6');
     };
 
     return (
@@ -29,21 +35,19 @@ const OnboardingRegister6 = ({ navigation }) => {
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Icon name="arrow-back-outline" size={40} color="black" />
             </TouchableOpacity>
-
-            <Text style={styles.title}>생년월일을 입력해주세요.</Text>
+            <Text style={styles.title}>휴대폰 번호를 입력해주세요.</Text>
 
             <TextInput
                 style={styles.input}
-                placeholder="YYYY-MM-DD"
-                value={birthdate}
-                onChangeText={(text) => setBirthdate(formatDate(text))}
-                maxLength={10}
+                placeholder="휴대폰 번호"
+                value={localPhone}
+                onChangeText={handlePhoneInput}
             />
 
             <TouchableOpacity
-                style={[styles.nextButton, !birthdate && { backgroundColor: '#ccc' }]}
+                style={[styles.nextButton, !localPhone && { backgroundColor: '#ccc' }]}
                 onPress={handleNext}
-                disabled={!birthdate}
+                disabled={!localPhone}
             >
                 <Text style={styles.nextButtonText}>다음</Text>
             </TouchableOpacity>
@@ -51,7 +55,8 @@ const OnboardingRegister6 = ({ navigation }) => {
     );
 };
 
-export default OnboardingRegister6;
+export default OnboardingRegister5;
+
 
 const styles = StyleSheet.create({
     container: {
@@ -76,19 +81,20 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     nextButton: {
-        marginLeft: 30,
         width: '100%',
+        display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#6DB777',
         borderRadius: 10,
         height: 50,
+        left: "30",
         position: 'absolute',
-        bottom: 40,
+        bottom: "40",
     },
     nextButtonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: 600,
     },
 });
