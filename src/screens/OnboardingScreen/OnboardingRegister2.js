@@ -1,10 +1,12 @@
-import React, {useRef, useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View, Alert} from 'react-native';
+import React, { useRef, useState, useContext } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import api from '../../api/api';
+import { UserContext } from '../../context/UserContext';
 
-const OnboardingRegister2 = ({navigation, route}) => {
-    const { email } = route.params; // 이메일을 이전 화면에서 전달받음
+const OnboardingRegister2 = ({ navigation, route }) => {
+    const { email } = route.params; // Email passed from previous screen
+    const { setUserData } = useContext(UserContext); // Access UserContext to manage user state
     const [inputs, setInputs] = useState(['', '', '', '']);
     const inputRefs = useRef([]);
     const [isFailed, setIsFailed] = useState(false);
@@ -13,17 +15,17 @@ const OnboardingRegister2 = ({navigation, route}) => {
 
     const handleInputChange = (text, index) => {
         const updatedInputs = [...inputs];
-        updatedInputs[index] = text.slice(-1); // 하나의 숫자만 저장
+        updatedInputs[index] = text.slice(-1); // Only keep the last character
         setInputs(updatedInputs);
 
         if (text && index < inputRefs.current.length - 1) {
-            inputRefs.current[index + 1].focus(); // 다음 인풋으로 이동
+            inputRefs.current[index + 1].focus(); // Move to next input
         }
     };
 
     const handleKeyPress = (e, index) => {
         if (e.nativeEvent.key === 'Backspace' && !inputs[index] && index > 0) {
-            inputRefs.current[index - 1].focus(); // 이전 인풋으로 이동
+            inputRefs.current[index - 1].focus(); // Move to previous input
         }
     };
 
@@ -40,6 +42,7 @@ const OnboardingRegister2 = ({navigation, route}) => {
             });
 
             if (response.status === 200) {
+                setUserData((prev) => ({ ...prev, isVerified: true }));
                 Alert.alert('성공', '인증이 완료되었습니다.');
                 navigation.navigate('OnboardingRegister3');
             }
@@ -74,7 +77,7 @@ const OnboardingRegister2 = ({navigation, route}) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black"/>
+                <Icon name="arrow-back-outline" size={40} color="black" />
             </TouchableOpacity>
             <Text style={styles.title}>인증번호를 입력해주세요.</Text>
 
@@ -85,9 +88,9 @@ const OnboardingRegister2 = ({navigation, route}) => {
                         style={styles.input}
                         value={inputs[index]}
                         onChangeText={(text) => handleInputChange(text, index)}
-                        maxLength={1} // 한 글자만 입력
-                        ref={(el) => (inputRefs.current[index] = el)} // ref 설정
-                        onKeyPress={(e) => handleKeyPress(e, index)} // Backspace 처리
+                        maxLength={1}
+                        ref={(el) => (inputRefs.current[index] = el)}
+                        onKeyPress={(e) => handleKeyPress(e, index)}
                     />
                 ))}
             </View>
@@ -95,7 +98,7 @@ const OnboardingRegister2 = ({navigation, route}) => {
                 <View style={styles.failCommentBox}>
                     <Text style={styles.failComment}>인증 번호를 다시 확인해주세요.</Text>
                     <TouchableOpacity onPress={retrySendCode} disabled={resending}>
-                        <Text style={[styles.retryBtn, resending && {color: '#ccc'}]}>
+                        <Text style={[styles.retryBtn, resending && { color: '#ccc' }]}>
                             {resending ? '재전송 중...' : '재전송'}
                         </Text>
                     </TouchableOpacity>
@@ -103,9 +106,9 @@ const OnboardingRegister2 = ({navigation, route}) => {
             )}
 
             <TouchableOpacity
-                style={[styles.nextButton, (!isAllInputsFilled || loading) && {backgroundColor: '#ccc'}]}
+                style={[styles.nextButton, (!isAllInputsFilled || loading) && { backgroundColor: '#ccc' }]}
                 onPress={handleConfirm}
-                disabled={!isAllInputsFilled || loading} // 입력이 다 안되면 비활성화
+                disabled={!isAllInputsFilled || loading}
             >
                 <Text style={styles.nextButtonText}>{loading ? '확인 중...' : '확인'}</Text>
             </TouchableOpacity>
@@ -114,6 +117,7 @@ const OnboardingRegister2 = ({navigation, route}) => {
 };
 
 export default OnboardingRegister2;
+
 
 const styles = StyleSheet.create({
     container: {

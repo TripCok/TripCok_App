@@ -1,22 +1,17 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View, Alert} from 'react-native';
+import React, { useState, useContext } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useDispatch} from 'react-redux';
-import {updateField} from '../../store/OnboardingRegisterSlice';
+import { UserContext } from '../../context/UserContext';
 
-const OnboardingRegister6 = ({navigation}) => {
-    const dispatch = useDispatch();
-    const [birthdate, setBirthdate] = useState('');
+const OnboardingRegister6 = ({ navigation }) => {
+    const { userData, setUserData } = useContext(UserContext);
+    const [birthdate, setBirthdate] = useState(userData?.birthdate || '');
 
     const formatDate = (text) => {
         const cleaned = text.replace(/[^0-9]/g, '');
-        if (cleaned.length <= 4) {
-            return cleaned;
-        } else if (cleaned.length <= 6) {
-            return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
-        } else {
-            return `${cleaned.slice(0, 4)}-${cleaned.slice(4, 6)}-${cleaned.slice(6, 8)}`;
-        }
+        if (cleaned.length <= 4) return cleaned;
+        if (cleaned.length <= 6) return `${cleaned.slice(0, 4)}-${cleaned.slice(4)}`;
+        return `${cleaned.slice(0, 4)}-${cleaned.slice(4, 6)}-${cleaned.slice(6, 8)}`;
     };
 
     const handleNext = () => {
@@ -24,16 +19,15 @@ const OnboardingRegister6 = ({navigation}) => {
             Alert.alert('오류', '유효한 날짜 형식(YYYY-MM-DD)으로 입력해주세요.');
             return;
         }
-        console.log(`생년월일 : ${birthdate}`);
-        dispatch(updateField({field: 'birthdate', value: birthdate}));
 
+        setUserData({ ...userData, birthdate });
         navigation.navigate('OnboardingRegister7');
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black"/>
+                <Icon name="arrow-back-outline" size={40} color="black" />
             </TouchableOpacity>
 
             <Text style={styles.title}>생년월일을 입력해주세요.</Text>
@@ -43,12 +37,11 @@ const OnboardingRegister6 = ({navigation}) => {
                 placeholder="YYYY-MM-DD"
                 value={birthdate}
                 onChangeText={(text) => setBirthdate(formatDate(text))}
-                // keyboardType="number-pad"
                 maxLength={10}
             />
 
             <TouchableOpacity
-                style={[styles.nextButton, !birthdate && {backgroundColor: '#ccc'}]}
+                style={[styles.nextButton, !birthdate && { backgroundColor: '#ccc' }]}
                 onPress={handleNext}
                 disabled={!birthdate}
             >

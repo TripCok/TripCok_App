@@ -1,26 +1,25 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, { useState, useContext } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useDispatch} from 'react-redux';
-import {updateField} from '../../store/OnboardingRegisterSlice';
+import { UserContext } from '../../context/UserContext';
 
-const OnboardingRegister7 = ({navigation}) => {
-    const [selectedGender, setSelectedGender] = useState(null); // 선택된 성별 상태
-    const dispatch = useDispatch();
+const OnboardingRegister7 = ({ navigation }) => {
+    const { userData, setUserData } = useContext(UserContext);
+    const [selectedGender, setSelectedGender] = useState(userData?.gender || null);
 
     const handleGenderSelect = (gender) => {
         setSelectedGender(gender);
-        dispatch(updateField({field: 'gender', value: gender}));
     };
 
     const handleNext = () => {
+        setUserData({ ...userData, gender: selectedGender });
         navigation.navigate('OnboardingRegister8');
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black"/>
+                <Icon name="arrow-back-outline" size={40} color="black" />
             </TouchableOpacity>
             <Text style={styles.title}>성별을 선택해주세요.</Text>
 
@@ -28,14 +27,14 @@ const OnboardingRegister7 = ({navigation}) => {
                 <TouchableOpacity
                     style={[
                         styles.selectBtnLeft,
-                        selectedGender === 'MALE' && styles.selectBtn, // 선택된 버튼 스타일 적용
+                        selectedGender === 'MALE' && styles.selectBtn,
                     ]}
                     onPress={() => handleGenderSelect('MALE')}
                 >
                     <Text
                         style={[
                             styles.btnText,
-                            selectedGender === 'MALE' && styles.selectBtnText, // 선택된 텍스트 스타일 적용
+                            selectedGender === 'MALE' && styles.selectBtnText,
                         ]}
                     >
                         남성
@@ -44,14 +43,14 @@ const OnboardingRegister7 = ({navigation}) => {
                 <TouchableOpacity
                     style={[
                         styles.selectBtnRight,
-                        selectedGender === 'FEMALE' && styles.selectBtn, // 선택된 버튼 스타일 적용
+                        selectedGender === 'FEMALE' && styles.selectBtn,
                     ]}
                     onPress={() => handleGenderSelect('FEMALE')}
                 >
                     <Text
                         style={[
                             styles.btnText,
-                            selectedGender === 'FEMALE' && styles.selectBtnText, // 선택된 텍스트 스타일 적용
+                            selectedGender === 'FEMALE' && styles.selectBtnText,
                         ]}
                     >
                         여성
@@ -60,12 +59,9 @@ const OnboardingRegister7 = ({navigation}) => {
             </View>
 
             <TouchableOpacity
-                style={[
-                    styles.nextButton,
-                    !selectedGender && {backgroundColor: '#ccc'}, // 선택되지 않으면 비활성화 스타일
-                ]}
+                style={[styles.nextButton, !selectedGender && { backgroundColor: '#ccc' }]}
                 onPress={handleNext}
-                disabled={!selectedGender} // 성별 선택 안 하면 버튼 비활성화
+                disabled={!selectedGender}
             >
                 <Text style={styles.nextButtonText}>다음</Text>
             </TouchableOpacity>

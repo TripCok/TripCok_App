@@ -1,69 +1,58 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View, Alert} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
-import api from '../../api/api';
-import {useDispatch} from 'react-redux';
-import {setOnboarded} from '../../store/onboardingSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useContext, useState} from "react";
+import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator} from "react-native";
+import {UserContext} from "../../context/UserContext";
+import api from "../../api/api";
+import Icon from "react-native-vector-icons/Ionicons";
 
 const OnboardingLogin = ({navigation}) => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [emailError, setEmailError] = useState('');
-    const [passwordError, setPasswordError] = useState('');
+    const {setUserData, setHasOnboarded} = useContext(UserContext);
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const dispatch = useDispatch();
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
-    const validateEmail = (email) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
+    const validateFields = () => {
+        let isValid = true;
+
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            setEmailError("유효한 이메일 주소를 입력해주세요.");
+            isValid = false;
+        } else {
+            setEmailError("");
+        }
+
+        if (!password || password.length < 6) {
+            setPasswordError("비밀번호는 최소 6자 이상이어야 합니다.");
+            isValid = false;
+        } else {
+            setPasswordError("");
+        }
+
+        return isValid;
     };
 
     const handleLogin = async () => {
-        let hasError = false;
-
-        if (!validateEmail(email)) {
-            setEmailError('올바른 이메일 형식을 입력해주세요.');
-            hasError = true;
-        } else {
-            setEmailError('');
-        }
-
-        if (password.length < 6) {
-            setPasswordError('비밀번호는 최소 6자 이상이어야 합니다.');
-            hasError = true;
-        } else {
-            setPasswordError('');
-        }
-
-        if (hasError) return;
+        if (!validateFields()) return;
 
         try {
             setLoading(true);
-            const response = await api.put('/member/login', {email, password});
+            const response = await api.put("/member/login", {email, password});
 
             if (response.status === 200) {
                 const userData = response.data;
+                setUserData(userData);
+                setHasOnboarded(true);
 
-                console.log('API 응답 데이터:', userData); // API에서 어떤 데이터가 오는지 확인
-                await AsyncStorage.setItem('userData', JSON.stringify(userData));
-
-                dispatch(setOnboarded(true));
-
-                Alert.alert('로그인 성공', '로그인에 성공했습니다.');
+                Alert.alert("로그인 성공", "로그인에 성공했습니다.");
             }
         } catch (error) {
-            if (error.response) {
-                Alert.alert('로그인 실패', error.response.data.message || '이메일 또는 비밀번호가 올바르지 않습니다.');
-                setEmailError('이메일 또는 비밀번호가 올바르지 않습니다.');
-                setPasswordError('이메일 또는 비밀번호가 올바르지 않습니다.');
-            } else {
-                Alert.alert('오류 발생', '네트워크 오류가 발생했습니다.');
-            }
+            Alert.alert("로그인 실패", "이메일 또는 비밀번호가 올바르지 않습니다.");
         } finally {
             setLoading(false);
         }
     };
+
 
     return (
         <View style={styles.container}>
@@ -76,11 +65,11 @@ const OnboardingLogin = ({navigation}) => {
             <TextInput
                 style={[styles.input, emailError && styles.inputError]}
                 placeholder="이메일"
+                value={email}
                 onChangeText={(text) => {
                     setEmail(text);
-                    setEmailError('');
+                    setEmailError("");
                 }}
-                value={email}
                 keyboardType="email-address"
                 autoCapitalize="none"
             />
@@ -89,21 +78,25 @@ const OnboardingLogin = ({navigation}) => {
             <TextInput
                 style={[styles.input, passwordError && styles.inputError]}
                 placeholder="비밀번호"
+                value={password}
                 onChangeText={(text) => {
                     setPassword(text);
-                    setPasswordError('');
+                    setPasswordError("");
                 }}
-                value={password}
                 secureTextEntry
             />
             {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
             <TouchableOpacity
-                style={[styles.loginButton, loading && {backgroundColor: '#ccc'}]}
+                style={[styles.loginButton, loading && {backgroundColor: "#ccc"}]}
                 onPress={handleLogin}
                 disabled={loading}
             >
-                <Text style={styles.loginButtonText}>{loading ? '로그인 중...' : '로그인'}</Text>
+                {loading ? (
+                    <ActivityIndicator size="small" color="#fff"/>
+                ) : (
+                    <Text style={styles.loginButtonText}>로그인</Text>
+                )}
             </TouchableOpacity>
         </View>
     );

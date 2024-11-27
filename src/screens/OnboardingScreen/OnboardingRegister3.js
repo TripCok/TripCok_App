@@ -1,28 +1,26 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import React, { useState, useContext } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useDispatch, useSelector} from 'react-redux';
-import {updateField} from '../../store/OnboardingRegisterSlice';
+import { UserContext } from '../../context/UserContext';
 
-const OnboardingRegister3 = ({navigation}) => {
-    const dispatch = useDispatch();
-    const name = useSelector((state) => state.onboardingRegister.name); // Redux에서 상태 가져오기
-    const [localName, setLocalName] = useState(name); // 초기값 설정
+const OnboardingRegister3 = ({ navigation }) => {
+    const { userData, setUserData } = useContext(UserContext);
+    const [localName, setLocalName] = useState(userData?.name || ''); // Initialize with existing data or empty string
 
     const handleNext = () => {
         if (!localName) {
-            alert('이름을 입력해주세요.');
+            Alert.alert('오류', '이름을 입력해주세요.');
             return;
         }
-        console.log(`이름 : ${localName}`);
-        dispatch(updateField({field: 'name', value: localName})); // Redux 상태 업데이트
+
+        setUserData({ ...userData, name: localName }); // Update name in context
         navigation.navigate('OnboardingRegister4');
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black"/>
+                <Icon name="arrow-back-outline" size={40} color="black" />
             </TouchableOpacity>
             <Text style={styles.title}>이름을 입력해주세요.</Text>
 
@@ -34,7 +32,7 @@ const OnboardingRegister3 = ({navigation}) => {
             />
 
             <TouchableOpacity
-                style={[styles.nextButton, !localName && {backgroundColor: '#ccc'}]}
+                style={[styles.nextButton, !localName && { backgroundColor: '#ccc' }]}
                 onPress={handleNext}
                 disabled={!localName}
             >

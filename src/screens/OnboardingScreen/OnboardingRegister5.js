@@ -1,17 +1,15 @@
-import React, {useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from 'react-native';
+import React, { useState, useContext } from 'react';
+import { StyleSheet, Text, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {useDispatch, useSelector} from 'react-redux';
-import {updateField} from '../../store/OnboardingRegisterSlice';
+import { UserContext } from '../../context/UserContext';
 
-const OnboardingRegister5 = ({navigation}) => {
-    const dispatch = useDispatch();
-    const phone = useSelector((state) => state.onboardingRegister.phone);
-    const [localPhone, setLocalPhone] = useState(phone);
+const OnboardingRegister5 = ({ navigation }) => {
+    const { userData, setUserData } = useContext(UserContext);
+    const [localPhone, setLocalPhone] = useState(userData?.phone || '');
 
     const handlePhoneInput = (text) => {
-        const numericText = text.replace(/[^0-9]/g, ''); // 숫자만 추출
-        if (numericText.length > 11) return; // 최대 11자리까지만 입력 허용
+        const numericText = text.replace(/[^0-9]/g, '');
+        if (numericText.length > 11) return;
         const formattedPhone = formatPhoneNumber(numericText);
         setLocalPhone(formattedPhone);
     };
@@ -24,18 +22,18 @@ const OnboardingRegister5 = ({navigation}) => {
 
     const handleNext = () => {
         if (!localPhone) {
-            alert('전화번호를 입력해주세요.');
+            Alert.alert('오류', '전화번호를 입력해주세요.');
             return;
         }
-        console.log(`전화번호 : ${localPhone}`);
-        dispatch(updateField({field: 'phone', value: localPhone}));
+
+        setUserData({ ...userData, phone: localPhone });
         navigation.navigate('OnboardingRegister6');
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black"/>
+                <Icon name="arrow-back-outline" size={40} color="black" />
             </TouchableOpacity>
             <Text style={styles.title}>휴대폰 번호를 입력해주세요.</Text>
 
@@ -47,7 +45,7 @@ const OnboardingRegister5 = ({navigation}) => {
             />
 
             <TouchableOpacity
-                style={[styles.nextButton, !localPhone && {backgroundColor: '#ccc'}]}
+                style={[styles.nextButton, !localPhone && { backgroundColor: '#ccc' }]}
                 onPress={handleNext}
                 disabled={!localPhone}
             >

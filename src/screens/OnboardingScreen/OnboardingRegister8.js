@@ -1,17 +1,13 @@
-import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import React, {useState, useContext} from 'react';
+import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { useDispatch, useSelector } from 'react-redux';
-import { updateField } from '../../store/OnboardingRegisterSlice';
+import {UserContext} from '../../context/UserContext';
 import api from '../../api/api';
-import { setOnboarded } from '../../store/onboardingSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const OnboardingRegister8 = ({ navigation }) => {
-    const dispatch = useDispatch();
-    const [address, setAddress] = useState('');
-    const [isLoading, setIsLoading] = useState(false); // 로딩 상태
-    const onboardingData = useSelector((state) => state.onboardingRegister);
+const OnboardingRegister8 = ({navigation}) => {
+    const {userData, setUserData} = useContext(UserContext);
+    const [address, setAddress] = useState(userData?.address || '');
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleNext = async () => {
         if (!address.trim()) {
@@ -19,35 +15,27 @@ const OnboardingRegister8 = ({ navigation }) => {
             return;
         }
 
-        dispatch(updateField({ field: 'address', value: address }));
+        setUserData({...userData, address});
 
-        setIsLoading(true); // 로딩 시작
+        setIsLoading(true);
         try {
-            const response = await api.post('/member/register', {
-                ...onboardingData,
-                address,
-            });
+            const response = await api.post('/member/register', {...userData, address});
 
             if (response.status === 201) {
                 Alert.alert('회원가입 성공', '회원가입이 완료되었습니다.');
-                await AsyncStorage.setItem('hasOnboarded', 'true');
-                dispatch(setOnboarded(true));
+                navigation.reset({index: 0, routes: [{name: 'Home'}]});
             }
         } catch (error) {
-            if (error.response) {
-                Alert.alert('회원가입 실패', error.response.data.message || '알 수 없는 오류가 발생했습니다.');
-            } else {
-                Alert.alert('네트워크 오류', '서버에 연결할 수 없습니다.');
-            }
+            Alert.alert('오류', '회원가입에 실패했습니다.');
         } finally {
-            setIsLoading(false); // 로딩 종료
+            setIsLoading(false);
         }
     };
 
     return (
         <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back-outline" size={40} color="black" />
+                <Icon name="arrow-back-outline" size={40} color="black"/>
             </TouchableOpacity>
             <Text style={styles.title}>주소를 입력해주세요.</Text>
 
@@ -55,19 +43,16 @@ const OnboardingRegister8 = ({ navigation }) => {
                 style={styles.input}
                 placeholder="서울특별시 OO구 OO동"
                 value={address}
-                onChangeText={(text) => setAddress(text)}
+                onChangeText={setAddress}
             />
 
             <TouchableOpacity
-                style={[styles.nextButton, !address && { backgroundColor: '#ccc' }]}
+                style={[styles.nextButton, (!address || isLoading) && {backgroundColor: '#ccc'}]}
                 onPress={handleNext}
-                disabled={!address || isLoading} // 로딩 중에는 버튼 비활성화
+                disabled={!address || isLoading}
             >
-                {isLoading ? (
-                    <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                    <Text style={styles.nextButtonText}>완료</Text>
-                )}
+                {isLoading ? <ActivityIndicator size="small" color="#fff"/> :
+                    <Text style={styles.nextButtonText}>완료</Text>}
             </TouchableOpacity>
         </View>
     );
