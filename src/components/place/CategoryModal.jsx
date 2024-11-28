@@ -41,30 +41,43 @@ const CategoryModal = ({visible, setVisible, fetchCategories, selectedCategories
     };
 
     const toggleSubCategorySelection = (categoryId) => {
-        setSelectedSubCategories((prev) =>
-            prev.includes(categoryId)
-                ? prev.filter((id) => id !== categoryId)
-                : [...prev, categoryId]
-        );
+        setSelectedSubCategories((prev) => {
+            if (prev.includes(categoryId)) {
+                // 이미 선택된 경우 제거
+                return prev.filter((id) => id !== categoryId);
+            } else {
+                // 선택되지 않은 경우 추가
+                return [...prev, categoryId];
+            }
+        });
     };
 
     const handleSave = () => {
         const selectedItems = findSelectedCategories(categories, selectedSubCategories);
-        onSave(selectedItems); // 부모 컴포넌트로 전달
+
+        if (selectedItems.length > 0) {
+            onSave(selectedItems); // 부모 컴포넌트로 선택된 모든 카테고리 전달
+        } else {
+            console.warn("No categories selected!");
+        }
+
         setSelectedCategory(null); // 선택된 카테고리 초기화
         setVisible(false); // 모달 닫기
     };
 
-// 모든 카테고리를 재귀적으로 탐색하여 선택된 항목 찾기
+    // 모든 카테고리를 재귀적으로 탐색하여 선택된 항목 찾기
     const findSelectedCategories = (allCategories, selectedIds) => {
         let results = [];
 
         allCategories.forEach((category) => {
+            // 현재 카테고리가 선택된 상태면 추가
             if (selectedIds.includes(category.id)) {
                 results.push(category);
             }
+            // 하위 카테고리가 있는 경우 재귀적으로 탐색
             if (category.children && category.children.length > 0) {
-                results = results.concat(findSelectedCategories(category.children, selectedIds));
+                const childResults = findSelectedCategories(category.children, selectedIds);
+                results = [...results, ...childResults];
             }
         });
 

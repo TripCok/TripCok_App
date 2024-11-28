@@ -1,11 +1,11 @@
-import React, {useState, useEffect, useContext} from 'react';
-import {ScrollView, StyleSheet, TouchableOpacity, Text, View} from 'react-native';
+import React, {useState, useContext} from 'react';
+import {View, StyleSheet, TouchableOpacity, ScrollView, Text} from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
-import {CategoryContext} from '../../context/CategoryContext';
-import CategoryModal from './CategoryModal';
+import CategoryModal from "../place/CategoryModal";
+import {CategoryContext} from "../../context/CategoryContext";
 import api from "../../api/api";
 
-const PlaceNavigation = () => {
+const GroupNavigationComponent = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const {selectedCategories, addCategories, removeCategory} = useContext(CategoryContext);
 
@@ -56,26 +56,21 @@ const PlaceNavigation = () => {
     );
 };
 
-export default PlaceNavigation;
+export default GroupNavigationComponent;
 
 const styles = StyleSheet.create({
     container: {
-        flexDirection: 'row',
-        paddingHorizontal: 20,
-        marginBottom:10
-    },
-    iconWrap: {
-        paddingHorizontal: 10,
+        width: "100%",
+        display: "flex",
+        flexDirection: "row",
+        paddingHorizontal: 30,
+        marginBottom: 10
     },
     filterIconWrap: {
         flexDirection: "row",
         gap: 10,
         alignItems: "center",
-        marginRight:10,
-    },
-    categoryFilterText: {
-        color: '#6DB777',
-        fontSize: 16,
+        marginRight: 10,
     },
     selectedCategory: {
         flexDirection: 'row',

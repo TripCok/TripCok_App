@@ -66,25 +66,33 @@ const CustomDrawer = ({navigation}) => {
                 <Text style={styles.menuItemTitle}>모임</Text>
                 <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigation.navigate("PlaceListScreen")}
+                    onPress={() => navigation.navigate("GroupList")}
+                >
+                    <Text style={styles.menuText}>모든 모임</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigation.navigate("PlaceCreate")}
                 >
                     <Text style={styles.menuText}>모임 만들기</Text>
-                    <TouchableOpacity
-                        style={styles.menuItem}
-                        onPress={() => navigation.navigate("PlaceList")}
-                    >
-                        <Text style={styles.menuText}>모임 찾기</Text>
-                    </TouchableOpacity>
                 </TouchableOpacity>
-            </View>
-
-            {/* 로그아웃 버튼 */}
-            <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-                <Icon name="enter-outline" size={30} color="black"/>
-                <Text style={styles.logoutText}>로그아웃</Text>
-            </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigation.navigate("MyGroup")}
+                >
+                    <Text style={styles.menuText}>내 모임</Text>
+                </TouchableOpacity>
         </View>
-    );
+
+    {/* 로그아웃 버튼 */
+    }
+    <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
+        <Icon name="enter-outline" size={30} color="black"/>
+        <Text style={styles.logoutText}>로그아웃</Text>
+    </TouchableOpacity>
+</View>
+)
+    ;
 };
 
 export default CustomDrawer;
