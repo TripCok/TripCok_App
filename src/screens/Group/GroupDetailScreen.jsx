@@ -1,11 +1,30 @@
-import React from 'react';
-import {View, Text, StyleSheet, Button, TouchableOpacity, Image, ScrollView} from "react-native";
+import React, {useContext, useEffect, useState} from 'react';
+import {View, Text, StyleSheet, TouchableOpacity, Image, ScrollView} from "react-native";
 import HeaderComponent from "../../components/HeaderComponent";
 import Icon from "react-native-vector-icons/Ionicons";
 import GroupMembersComponent from "../../components/group/details/GroupMembersComponent";
+import {UserContext} from "../../context/UserContext";
 
 const GroupDetailScreen = ({route, navigation}) => {
     const {item} = route.params;
+    const {userData} = useContext(UserContext);
+    const [isJoin, setIsJoin] = useState(false);
+
+    // 가입 상태 확인 함수
+    const checkIfJoined = () => {
+        const foundMember = item.members.find(member => member.id === userData.id);
+        setIsJoin(!!foundMember); // foundMember가 있으면 true, 없으면 false
+    };
+
+    // 화면이 포커싱될 때 가입 상태 재검사
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            checkIfJoined();
+        });
+
+        // 컴포넌트가 언마운트될 때 이벤트 리스너 정리
+        return unsubscribe;
+    }, [navigation, item.members, userData.id]);
 
     return (
         <View style={{position: "relative", height: "100%", backgroundColor: "#fff"}}>
@@ -24,13 +43,20 @@ const GroupDetailScreen = ({route, navigation}) => {
                     >
                         <Text style={styles.groupDetailNavTitle}>홈</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.groupDetailNavBtn} onPress={() => alert("준비중 입니다.")}>
+                    <TouchableOpacity
+                        style={styles.groupDetailNavBtn}
+                        onPress={() => isJoin ? alert("아직 준비되지 않은 기능입니다.") : alert("가입후 사용 할 수 있는 기능입니다.")}>
                         <Text style={styles.groupDetailNavTitle}>게시판</Text>
+
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.groupDetailNavBtn} onPress={() => alert("준비중 입니다.")}>
+                    <TouchableOpacity
+                        style={styles.groupDetailNavBtn}
+                        onPress={() => isJoin ? alert("아직 준비되지 않은 기능입니다.") : alert("가입후 사용 할 수 있는 기능입니다.")}>
                         <Text style={styles.groupDetailNavTitle}>사진첩</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.groupDetailNavBtn} onPress={() => alert("준비중 입니다.")}>
+                    <TouchableOpacity
+                        style={styles.groupDetailNavBtn}
+                        onPress={() => isJoin ? alert("아직 준비되지 않은 기능입니다.") : alert("가입후 사용 할 수 있는 기능입니다.")}>
                         <Text style={styles.groupDetailNavTitle}>채팅</Text>
                     </TouchableOpacity>
                 </View>
@@ -44,29 +70,36 @@ const GroupDetailScreen = ({route, navigation}) => {
                     <View style={styles.groupCategoryBox}>
                         <Text style={styles.groupCategoryText}>모집 {item.recruiting ? "ON" : "OFF"}</Text>
                     </View>
-                    {item.category.map((c, index) => (
+                    {item.category.map((c) => (
                         <View key={c.id} style={styles.groupCategoryBox}>
                             <Text style={styles.groupCategoryText}>{c.name}</Text>
                         </View>
                     ))}
-
                 </ScrollView>
 
                 <Text style={styles.groupDesc}>{item.description}</Text>
 
                 <GroupMembersComponent item={item.members}/>
-
             </ScrollView>
-            <View style={styles.groupJoinBtnContainer}>
-                <TouchableOpacity style={[styles.groupJoinBtn, (!item.recruiting) && {backgroundColor: '#ccc'}]}
-                                  disabled={!item.recruiting}>
-                    <Text style={styles.groupJoinText}>가입하기</Text>
-                </TouchableOpacity>
-            </View>
 
+            {
+                !isJoin && (
+                    <View style={styles.groupJoinBtnContainer}>
+                        <TouchableOpacity
+                            style={[
+                                styles.groupJoinBtn,
+                                !item.recruiting && {backgroundColor: '#ccc'}
+                            ]}
+                            disabled={!item.recruiting}
+                        >
+                            <Text style={styles.groupJoinText}>가입하기</Text>
+                        </TouchableOpacity>
+                    </View>
+                )
+            }
         </View>
-
-    );
+    )
+        ;
 };
 
 export default GroupDetailScreen;
@@ -130,7 +163,7 @@ const styles = StyleSheet.create({
         fontWeight: 400,
         width: "100%",
         borderColor: "#dadada",
-        paddingBottom:20,
+        paddingBottom: 20,
         borderBottomWidth: 2
 
     },
@@ -156,7 +189,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 500,
         color: "white",
-    },
+    }, alreadyJoinedText: {
+        fontSize: 16,
+        fontWeight: 500,
+        color: "white",
+    }
 
 
 });

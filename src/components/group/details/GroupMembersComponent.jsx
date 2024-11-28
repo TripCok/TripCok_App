@@ -3,7 +3,6 @@ import {View, StyleSheet, TouchableOpacity, Text, Image} from "react-native";
 import api from "../../../api/api";
 
 const GroupMembersComponent = ({item}) => {
-    console.log(item.name);
     const getFullImageUrl = (filePath) => {
         const baseURL = api.defaults?.baseURL || "http://localhost:8080";
         return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
@@ -50,7 +49,7 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         borderWidth: 1,
         borderColor: '#6DB777',
-        marginRight:20,
+        marginRight: 20,
     },
     name: {
         fontSize: 14,
