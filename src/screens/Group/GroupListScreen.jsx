@@ -12,7 +12,7 @@ const GroupListScreen = ({navigation}) => {
         <View style={styles.container}>
             <HeaderComponent navigation={navigation}/>
             <GroupNavigationComponent></GroupNavigationComponent>
-            <GroupCardsComponent></GroupCardsComponent>
+            <GroupCardsComponent navigation={navigation}></GroupCardsComponent>
 
         </View>
     );

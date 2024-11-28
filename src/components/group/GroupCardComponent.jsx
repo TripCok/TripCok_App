@@ -2,9 +2,12 @@ import React from 'react';
 import {Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
-const GroupCardComponent = ({item}) => {
+const GroupCardComponent = ({navigation, item}) => {
     return (
-        <TouchableOpacity style={styles.container}>
+        <TouchableOpacity
+            style={styles.container}
+            onPress={() => navigation.navigate("GroupDetails", {item: item})}
+        >
 
             <Image source={{uri: "https://via.placeholder.com/150"}} style={styles.groupImage}/>
 

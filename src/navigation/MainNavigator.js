@@ -7,6 +7,7 @@ import PlaceScreen from "../screens/Place/PlaceScreen";
 import CreateGroupScreen from "../screens/Group/CreateGroupScreen";
 import GroupListScreen from "../screens/Group/GroupListScreen";
 import MyGroupsScreen from "../screens/Group/MyGroupsScreen";
+import GroupDetailScreen from "../screens/Group/GroupDetailScreen";
 
 const Drawer = createDrawerNavigator();
 
@@ -21,6 +22,7 @@ const MainNavigator = () => {
             <Drawer.Screen name="PlaceList" component={PlaceListScreen}/>
             <Drawer.Screen name="Place" component={PlaceScreen}/>
             <Drawer.Screen name="GroupList" component={GroupListScreen}/>
+            <Drawer.Screen name="GroupDetails" component={GroupDetailScreen}/>
             <Drawer.Screen name="GroupCreate" component={CreateGroupScreen}/>
             <Drawer.Screen name="MyGroup" component={MyGroupsScreen}/>
         </Drawer.Navigator>

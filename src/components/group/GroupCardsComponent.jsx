@@ -3,7 +3,7 @@ import { ActivityIndicator, StyleSheet, View, Text, FlatList } from "react-nativ
 import GroupCardComponent from "./GroupCardComponent";
 import api from "../../api/api";
 
-const GroupCardsComponent = () => {
+const GroupCardsComponent = ({navigation}) => {
     const [data, setData] = useState([]); // 데이터를 배열로 초기화
     const [loading, setLoading] = useState(false); // 데이터 로드 상태
     const [error, setError] = useState(null); // 에러 상태
@@ -54,7 +54,7 @@ const GroupCardsComponent = () => {
     return (
         <FlatList
             data={data}
-            renderItem={({ item }) => <GroupCardComponent item={item} />}
+            renderItem={({ item }) => <GroupCardComponent navigation={navigation} item={item} />}
             keyExtractor={(item) => item.id.toString()}
             contentContainerStyle={styles.container}
             onEndReached={loadMore} // 스크롤 끝에 도달하면 loadMore 호출
