@@ -1,11 +1,13 @@
-import React, {useRef} from 'react';
+import React, {useContext, useRef} from 'react';
 import {Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import ProfileModalComponent from "../components/profile/ProfileModalComponent"; // 모달 컴포넌트 가져오기
+import ProfileModalComponent from "../components/profile/ProfileModalComponent";
+import {UserContext} from "../context/UserContext"; // 모달 컴포넌트 가져오기
 
 
-export const HeaderComponent = ({navigation, userData}) => {
+export const HeaderComponent = ({navigation}) => {
     const modalizeRef = useRef(null);
+    const {userData, setUserData, setHasOnboarded} = useContext(UserContext);
 
     // 모달 열기
     const openProfileModal = () => {

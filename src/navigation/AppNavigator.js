@@ -7,7 +7,7 @@ import MainNavigator from "./MainNavigator";
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-    const { hasOnboarded, userData } = useContext(UserContext);
+    const {hasOnboarded, userData} = useContext(UserContext);
 
     useEffect(() => {
         console.log("onboarding state:", hasOnboarded);
@@ -17,11 +17,11 @@ const AppNavigator = () => {
     const shouldShowMain = hasOnboarded && userData; // 두 조건을 모두 확인
 
     return (
-        <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
             {shouldShowMain ? (
-                <Stack.Screen name="Main" component={MainNavigator} />
+                <Stack.Screen name="Main" component={MainNavigator}/>
             ) : (
-                <Stack.Screen name="Onboarding" component={OnboardingNavigator} />
+                <Stack.Screen name="Onboarding" component={OnboardingNavigator}/>
             )}
         </Stack.Navigator>
     );

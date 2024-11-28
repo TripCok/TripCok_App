@@ -13,6 +13,7 @@ const OnboardingLogin = ({navigation}) => {
     const [emailError, setEmailError] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
+
     const validateFields = () => {
         let isValid = true;
 
