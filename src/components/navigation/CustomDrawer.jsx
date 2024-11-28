@@ -43,7 +43,7 @@ const CustomDrawer = ({navigation}) => {
                 {/* 프로필 섹션 */}
                 <View style={styles.profileContainer}>
                     <Image
-                        source={{uri: userData?.profileImage || "https://via.placeholder.com/50"}}
+                        source={userData?.profileImage ? {uri: userData.profileImage} : require('../../assets/images/b-p-1.png')}
                         style={styles.profileImage}
                     />
                     <View>
@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
         height: 60,
         borderRadius: 30,
         marginRight: 10,
+        objectFit: "fill",
     },
     profileName: {
         fontSize: 16,

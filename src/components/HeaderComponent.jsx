@@ -1,38 +1,44 @@
-import React, {useContext, useRef} from 'react';
-import {Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import React, { useContext, useEffect, useRef } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import ProfileModalComponent from "../components/profile/ProfileModalComponent";
-import {UserContext} from "../context/UserContext"; // 모달 컴포넌트 가져오기
+import { UserContext } from "../context/UserContext";
+import api from "../api/api";
 
-
-export const HeaderComponent = ({navigation}) => {
+export const HeaderComponent = ({ navigation }) => {
     const modalizeRef = useRef(null);
-    const {userData, setUserData, setHasOnboarded} = useContext(UserContext);
+    const { userData } = useContext(UserContext);
 
-    // 모달 열기
     const openProfileModal = () => {
         modalizeRef.current?.open();
     };
+
+    const getFullImageUrl = (filePath) => {
+        const baseURL = api.defaults?.baseURL || "http://localhost:8080";
+        return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
+    };
+
     return (
         <>
             <View style={styles.navContainer}>
                 <TouchableOpacity style={styles.navLeftMenu} onPress={openProfileModal}>
                     <View style={styles.navLeft}>
-                        <View style={styles.navLeftIcon}></View>
+                        <Image
+                            source={userData?.profileImage ? { uri: getFullImageUrl(userData.profileImage) } : require("../assets/images/b-p-1.png")}
+                            style={styles.navLeftIcon}
+                        />
+
                         <View style={styles.navLeftText}>
                             <Text style={styles.navLeftTextTitle}>안녕하세요.</Text>
-                            <Text style={styles.navLeftTextSub}>{userData.name || '사용자'}</Text>
+                            <Text style={styles.navLeftTextSub}>{userData.name || "사용자"}</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
                 <View style={styles.navRight}>
                     <TouchableOpacity style={styles.navRightNotification}>
-                        <Icon name="notifications-outline" size={25} color="#6DB777"/>
+                        <Icon name="notifications-outline" size={25} color="#6DB777" />
                     </TouchableOpacity>
-                    <TouchableOpacity
-                        style={styles.navRightMenu}
-                        onPress={() => navigation.openDrawer()}
-                    >
+                    <TouchableOpacity style={styles.navRightMenu} onPress={() => navigation.openDrawer()}>
                         <View style={styles.navRightBoxContainer}>
                             <View style={styles.navRightBox}></View>
                             <View style={styles.navRightBox}></View>
@@ -44,8 +50,7 @@ export const HeaderComponent = ({navigation}) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <ProfileModalComponent ref={modalizeRef}/>
-
+            <ProfileModalComponent ref={modalizeRef} />
         </>
     );
 };
@@ -71,10 +76,12 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     navLeftIcon: {
-        width: 40,
-        height: 40,
+        width: 45,
+        height: 45,
         backgroundColor: '#000',
         borderRadius: 99,
+        borderWidth: 1,
+        borderColor: '#6DB777',
     },
     navLeftText: {
         flexDirection: 'column',
