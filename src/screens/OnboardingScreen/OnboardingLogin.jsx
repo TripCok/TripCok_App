@@ -1,5 +1,5 @@
 import React, {useContext, useState} from "react";
-import {Alert, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator} from "react-native";
+import {ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import {UserContext} from "../../context/UserContext";
 import api from "../../api/api";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -41,16 +41,19 @@ const OnboardingLogin = ({navigation}) => {
             setLoading(true);
             const response = await api.put("/member/login", {email, password});
 
-            if (response.status === 200) {
+            if (response.status === 200 && response.data && Object.keys(response.data).length > 0) {
                 const userData = response.data;
                 await AsyncStorage.setItem("userData", JSON.stringify(userData));
                 setUserData(userData);
                 setHasOnboarded(true);
 
                 Alert.alert("로그인 성공", "로그인에 성공했습니다.");
+            } else {
+                Alert.alert("로그인 실패", "서버에서 유효한 데이터를 반환하지 않았습니다.");
             }
         } catch (error) {
             Alert.alert("로그인 실패", "이메일 또는 비밀번호가 올바르지 않습니다.");
+            console.error("Login error:", error);
         } finally {
             setLoading(false);
         }

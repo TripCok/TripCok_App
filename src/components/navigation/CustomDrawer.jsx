@@ -72,7 +72,7 @@ const CustomDrawer = ({navigation}) => {
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigation.navigate("PlaceCreate")}
+                    onPress={() => navigation.navigate("GroupCreate")}
                 >
                     <Text style={styles.menuText}>모임 만들기</Text>
                 </TouchableOpacity>
