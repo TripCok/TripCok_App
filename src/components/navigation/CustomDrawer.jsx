@@ -3,6 +3,7 @@ import {StyleSheet, Text, View, TouchableOpacity, Image, Alert} from "react-nati
 import {UserContext} from "../../context/UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/Ionicons";
+import api from "../../api/api";
 
 
 const CustomDrawer = ({navigation}) => {
@@ -37,13 +38,18 @@ const CustomDrawer = ({navigation}) => {
         );
     };
 
+    const getFullImageUrl = (filePath) => {
+        const baseURL = api.defaults?.baseURL || "http://localhost:8080";
+        return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
+    };
+
     return (
         <View style={styles.drawerContainer}>
             <View>
                 {/* 프로필 섹션 */}
                 <View style={styles.profileContainer}>
                     <Image
-                        source={userData?.profileImage ? {uri: userData.profileImage} : require('../../assets/images/b-p-1.png')}
+                        source={userData?.profileImage ? { uri: getFullImageUrl(userData.profileImage) } : require("../../assets/images/b-p-1.png")}
                         style={styles.profileImage}
                     />
                     <View>

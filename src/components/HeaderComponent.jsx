@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     navLeftIcon: {
         width: 45,
         height: 45,
-        backgroundColor: '#000',
+        // backgroundColor: '#000',
         borderRadius: 99,
         borderWidth: 1,
         borderColor: '#6DB777',
