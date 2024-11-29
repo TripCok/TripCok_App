@@ -63,21 +63,29 @@ const GroupDetailScreen = ({route, navigation}) => {
 
                 <Image source={{uri: "https://via.placeholder.com/150"}} style={styles.groupThumbnail}></Image>
 
-                <ScrollView horizontal style={styles.groupCategoriesBox}>
-                    <View style={styles.groupCategoryBox}>
-                        <Text style={styles.groupCategoryText}>맴버 {item.groupMemberCount}명</Text>
-                    </View>
-                    <View style={styles.groupCategoryBox}>
-                        <Text style={styles.groupCategoryText}>모집 {item.recruiting ? "ON" : "OFF"}</Text>
-                    </View>
-                    {item.category.map((c) => (
-                        <View key={c.id} style={styles.groupCategoryBox}>
-                            <Text style={styles.groupCategoryText}>{c.name}</Text>
+                <View>
+                    <ScrollView horizontal style={styles.groupCategoriesBox}>
+                        <View style={styles.groupCategoryBox}>
+                            <Text style={styles.groupCategoryText}>맴버 {item.groupMemberCount || 0}명</Text>
                         </View>
-                    ))}
-                </ScrollView>
+                        <View style={styles.groupCategoryBox}>
+                            <Text style={styles.groupCategoryText}>모집 {item.recruiting ? "ON" : "OFF"}</Text>
+                        </View>
+                        {item.category && item.category.length > 0 ? (
+                            item.category.map((c, index) => (
+                                <View key={c.id || index} style={styles.groupCategoryBox}>
+                                    <Text style={styles.groupCategoryText}>{c.name}</Text>
+                                </View>
+                            ))
+                        ) : (
+                            <Text style={styles.groupCategoryText}>카테고리가 없습니다.</Text>
+                        )}
+                    </ScrollView>
+                </View>
+
 
                 <Text style={styles.groupDesc}>{item.description}</Text>
+
 
                 <GroupMembersComponent item={item.members}/>
             </ScrollView>
@@ -143,8 +151,9 @@ const styles = StyleSheet.create({
         height: 200,
     },
     groupCategoriesBox: {
-        marginTop: 10,
-        marginBottom: 10
+        width: "100%",
+        marginTop: 20,
+        marginBottom: 20,
     },
     groupCategoryBox: {
         paddingHorizontal: 5,
