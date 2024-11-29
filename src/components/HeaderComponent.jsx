@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useRef } from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View, Platform } from "react-native";
+import React, {useContext, useEffect, useRef} from "react";
+import {Image, StyleSheet, Text, TouchableOpacity, View, Platform} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import ProfileModalComponent from "../components/profile/ProfileModalComponent";
-import { UserContext } from "../context/UserContext";
+import {UserContext} from "../context/UserContext";
 import api from "../api/api";
 
-export const HeaderComponent = ({ navigation }) => {
+export const HeaderComponent = ({navigation}) => {
     const modalizeRef = useRef(null);
-    const { userData } = useContext(UserContext);
+    const {userData} = useContext(UserContext);
 
     const openProfileModal = () => {
         modalizeRef.current?.open();
@@ -24,7 +24,7 @@ export const HeaderComponent = ({ navigation }) => {
                 <TouchableOpacity style={styles.navLeftMenu} onPress={openProfileModal}>
                     <View style={styles.navLeft}>
                         <Image
-                            source={userData?.profileImage ? { uri: getFullImageUrl(userData.profileImage) } : require("../assets/images/b-p-1.png")}
+                            source={userData?.profileImage ? {uri: getFullImageUrl(userData.profileImage)} : require("../assets/images/b-p-1.png")}
                             style={styles.navLeftIcon}
                         />
 
@@ -36,7 +36,7 @@ export const HeaderComponent = ({ navigation }) => {
                 </TouchableOpacity>
                 <View style={styles.navRight}>
                     <TouchableOpacity style={styles.navRightNotification}>
-                        <Icon name="notifications-outline" size={25} color="#6DB777" />
+                        <Icon name="notifications-outline" size={25} color="#6DB777"/>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.navRightMenu} onPress={() => navigation.openDrawer()}>
                         <View style={styles.navRightBoxContainer}>
@@ -50,7 +50,7 @@ export const HeaderComponent = ({ navigation }) => {
                     </TouchableOpacity>
                 </View>
             </View>
-            <ProfileModalComponent ref={modalizeRef} />
+            <ProfileModalComponent ref={modalizeRef}/>
         </>
     );
 };

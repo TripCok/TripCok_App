@@ -136,9 +136,9 @@ const ProfileModalComponent = forwardRef((props, ref) => {
         return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
     };
 
-    const renderProfileImages = ({ item }) => (
+    const renderProfileImages = ({item}) => (
         <TouchableOpacity onPress={() => selectBaseProfileImage(item)}>
-            <Image source={item} style={styles.baseProfileImage} />
+            <Image source={item} style={styles.baseProfileImage}/>
         </TouchableOpacity>
     );
 
@@ -197,7 +197,6 @@ const styles = StyleSheet.create({
         width: 100,
         height: 100,
         borderRadius: 99,
-        backgroundColor: "#ff2",
         position: "relative",
         justifyContent: "center",
         alignItems: "center",
