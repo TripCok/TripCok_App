@@ -8,6 +8,7 @@ const GroupMembersComponent = ({item}) => {
         return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
     };
 
+
     return (
         <View style={styles.container}>
             <Text style={styles.containerText}>모임 맴버</Text>

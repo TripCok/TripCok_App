@@ -1,17 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View, Text, FlatList } from "react-native";
+import React, {useContext, useEffect, useState, useCallback} from 'react';
+import {ActivityIndicator, FlatList, StyleSheet, View} from "react-native";
 import GroupCardComponent from "./GroupCardComponent";
 import api from "../../api/api";
+import {GroupContext} from "../../context/GroupContext";
+import {useFocusEffect} from '@react-navigation/native';
 
 const GroupCardsComponent = ({navigation}) => {
-    const [data, setData] = useState([]); // 데이터를 배열로 초기화
-    const [loading, setLoading] = useState(false); // 데이터 로드 상태
-    const [error, setError] = useState(null); // 에러 상태
-    const [page, setPage] = useState(0); // 현재 페이지
-    const [hasMore, setHasMore] = useState(true); // 더 가져올 데이터가 있는지 여부
+    const {groupData, setGroupData, page, setPage} = useContext(GroupContext);
+    const [loading, setLoading] = useState(false);
+    const [refreshing, setRefreshing] = useState(false); // 새로고침 상태 추가
+    const [error, setError] = useState(null);
+    const [hasMore, setHasMore] = useState(true);
 
-    const fetchData = async (currentPage) => {
-        if (!hasMore || loading) return; // 이미 로드 중이거나 더 가져올 데이터가 없으면 종료
+    const fetchData = async (currentPage, reset = false) => {
+        if (!hasMore && !reset) return;
         setLoading(true);
 
         try {
@@ -19,13 +21,14 @@ const GroupCardsComponent = ({navigation}) => {
                 params: {
                     page: currentPage,
                     size: 10,
-                    query: "",
+                    query: '',
                 },
             });
-
             const newContent = response.data.content || [];
-            setData((prevData) => [...prevData, ...newContent]); // 기존 데이터에 새 데이터 추가
-            setHasMore(newContent.length > 0); // 더 이상 데이터가 없으면 false
+            setGroupData((prevData) =>
+                reset ? newContent : [...prevData, ...newContent]
+            );
+            setHasMore(newContent.length > 0);
         } catch (err) {
             setError(err.message || '데이터를 가져오는 중 오류가 발생했습니다.');
         } finally {
@@ -33,43 +36,45 @@ const GroupCardsComponent = ({navigation}) => {
         }
     };
 
-    useEffect(() => {
-        fetchData(page); // 컴포넌트가 마운트될 때 첫 페이지 데이터 로드
-    }, [page]);
-
-    const loadMore = () => {
-        if (!loading && hasMore) {
-            setPage((prevPage) => prevPage + 1); // 다음 페이지 요청
+    const refreshData = async () => {
+        setRefreshing(true); // 새로고침 상태 시작
+        try {
+            await fetchData(0, true); // 첫 페이지 데이터 다시 로드
+        } finally {
+            setRefreshing(false); // 새로고침 상태 종료
         }
     };
 
-    if (error) {
-        return (
-            <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{error}</Text>
-            </View>
-        );
-    }
+    useEffect(() => {
+        fetchData(page);
+    }, [page]);
+
+    useFocusEffect(
+        useCallback(() => {
+            setPage(0); // 첫 페이지로 리셋
+            fetchData(0, true); // 데이터를 리셋한 뒤 로드
+        }, [])
+    );
+
+    const loadMore = () => {
+        if (!loading && hasMore) {
+            setPage((prevPage) => prevPage + 1);
+        }
+    };
 
     return (
         <FlatList
-            data={data}
-            renderItem={({ item }) => <GroupCardComponent navigation={navigation} item={item} />}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={styles.container}
-            onEndReached={loadMore} // 스크롤 끝에 도달하면 loadMore 호출
-            onEndReachedThreshold={0.5} // 스크롤의 50% 지점에서 다음 페이지 요청
+            data={groupData}
+            renderItem={({item}) => <GroupCardComponent navigation={navigation} item={item}/>}
+            keyExtractor={(item, index) => `${item.id}-${index}`}
+            onEndReached={loadMore}
+            onEndReachedThreshold={0.5}
+            refreshing={refreshing} // 새로고침 상태
+            onRefresh={refreshData} // 새로고침 함수
             ListFooterComponent={
                 loading ? (
                     <View style={styles.loaderContainer}>
-                        <ActivityIndicator size="large" color="#0000ff" />
-                    </View>
-                ) : null
-            }
-            ListEmptyComponent={
-                !loading && !data.length ? (
-                    <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>표시할 그룹이 없습니다.</Text>
+                        <ActivityIndicator size="large" color="#0000ff"/>
                     </View>
                 ) : null
             }
@@ -82,5 +87,10 @@ export default GroupCardsComponent;
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 20,
-    }
-})
+    },
+    loaderContainer: {
+        padding: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+});

@@ -50,10 +50,10 @@ const HomeScreen = ({navigation}) => {
             <ScrollView style={styles.contentContainer}>
                 <MainSlideComponent/>
                 <View style={styles.groupNavContainer}>
-                    <TouchableOpacity style={styles.groupNavBox}>
+                    <TouchableOpacity style={styles.groupNavBox} onPress={() => navigation.navigate('GroupCreate')}>
                         <Text style={styles.groupNavTex}>모임{'\n'}만들기</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.groupNavBox}>
+                    <TouchableOpacity style={styles.groupNavBox} onPress={() => navigation.navigate('GroupList')}>
                         <Text style={styles.groupNavTex}>모임{'\n'}찾기</Text>
                     </TouchableOpacity>
                 </View>

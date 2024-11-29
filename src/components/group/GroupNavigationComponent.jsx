@@ -1,5 +1,5 @@
-import React, {useState, useContext} from 'react';
-import {View, StyleSheet, TouchableOpacity, ScrollView, Text} from "react-native";
+import React, {useContext, useState} from 'react';
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Icon from 'react-native-vector-icons/Ionicons';
 import CategoryModal from "../place/CategoryModal";
 import {CategoryContext} from "../../context/CategoryContext";

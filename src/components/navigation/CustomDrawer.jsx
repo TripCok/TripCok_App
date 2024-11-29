@@ -61,6 +61,14 @@ const CustomDrawer = ({navigation}) => {
                 </View>
 
                 {/* 메뉴 아이템 */}
+                <Text style={styles.menuItemTitle}>메인</Text>
+                <TouchableOpacity
+                    style={styles.menuItem}
+                    onPress={() => navigation.navigate("Home")}
+                >
+                    <Text style={styles.menuText}>홈</Text>
+                </TouchableOpacity>
+
                 <Text style={styles.menuItemTitle}>여행</Text>
                 <TouchableOpacity
                     style={styles.menuItem}

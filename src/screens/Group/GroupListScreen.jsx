@@ -13,7 +13,6 @@ const GroupListScreen = ({navigation}) => {
             <HeaderComponent navigation={navigation}/>
             <GroupNavigationComponent></GroupNavigationComponent>
             <GroupCardsComponent navigation={navigation}></GroupCardsComponent>
-
         </View>
     );
 };

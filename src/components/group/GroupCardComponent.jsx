@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, StyleSheet, Image, ScrollView, TouchableOpacity} from "react-native";
+import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 
 const GroupCardComponent = ({navigation, item}) => {
@@ -12,25 +12,23 @@ const GroupCardComponent = ({navigation, item}) => {
             <Image source={{uri: "https://via.placeholder.com/150"}} style={styles.groupImage}/>
 
             <View style={styles.groupDescBox}>
-                <View>
-                    <Text style={styles.groupTitle}>{item.groupName}</Text>
-                    <View style={{display: "flex", flexDirection: "row", gap: 5, marginVertical: 5}}>
-                        <View style={{display: "flex", flexDirection: "row", alignItems: "center", gap: 2}}>
-                            <Icon name="people-sharp" size={16} color="#6DB777"/>
-                            <Text> {item.groupMemberCount}</Text>
-                        </View>
-                        <View style={{flexDirection: "row", gap: 5}}>
-                            <Icon name="enter" size={16} color="#6DB777"/>
-                            {item.recruiting ?
-                                <Text>OPEN</Text> :
-                                <Text>Close</Text>
-                            }
-                        </View>
+                <Text style={styles.groupTitle}>{item.groupName}</Text>
+                <View style={{display: "flex", flexDirection: "row", gap: 5, marginVertical: 5}}>
+                    <View style={{display: "flex", flexDirection: "row", alignItems: "center", gap: 2}}>
+                        <Icon name="people-sharp" size={16} color="#6DB777"/>
+                        <Text> {item.groupMemberCount}</Text>
+                    </View>
+                    <View style={{flexDirection: "row", gap: 5}}>
+                        <Icon name="enter" size={16} color="#6DB777"/>
+                        {item.recruiting ?
+                            <Text>OPEN</Text> :
+                            <Text>Close</Text>
+                        }
                     </View>
                 </View>
                 <ScrollView horizontal style={styles.categoriesContainer}>
                     {
-                        item.category.map((item, index) => (
+                        item.categories.map((item, index) => (
                             <View style={styles.groupCategoryContainer} key={item.id}>
                                 <Text style={styles.groupCategoryText}>{item.name}</Text>
                             </View>
@@ -48,6 +46,7 @@ export default GroupCardComponent;
 
 const styles = StyleSheet.create({
     container: {
+        paddingHorizontal: 20,
         width: "100%",
         height: 120,
         display: "flex",
