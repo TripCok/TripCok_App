@@ -14,8 +14,14 @@ const GroupMembersComponent = ({item}) => {
             {
                 item.map((member) => (
                     <View key={member.id} style={styles.memberCard}>
-                        <Image style={styles.profileImage}
-                               source={{uri: getFullImageUrl(member.profileImage)}}></Image>
+                        <Image
+                            style={styles.profileImage}
+                            source={
+                                member.profileImage
+                                    ? {uri: getFullImageUrl(member.profileImage)}
+                                    : require("../../../assets/images/b-p-1.png")
+                            }
+                        />
                         <Text style={styles.name}>{member.name}</Text>
                     </View>
                 ))
@@ -42,7 +48,7 @@ const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom:10
+        marginBottom: 10
     },
     profileImage: {
         width: 40,
