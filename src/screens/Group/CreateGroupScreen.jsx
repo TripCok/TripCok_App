@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useFocusEffect} from "@react-navigation/native";
 import {
-    Keyboard,
+    Keyboard, ScrollView,
     StyleSheet,
     Text,
     TextInput,
@@ -77,7 +77,7 @@ const CreateGroupScreen = ({navigation}) => {
 
             if (response.status === 201) {
                 console.log("성공적으로 모임을 생성 성공");
-                navigation.navigate("GroupDetails", { item: response.data }); // 상세 페이지로 이동
+                navigation.navigate("GroupDetails", {item: response.data}); // 상세 페이지로 이동
             }
         } catch (error) {
             console.error("Error creating group:", error);
@@ -119,29 +119,31 @@ const CreateGroupScreen = ({navigation}) => {
                     />
                 </View>
 
-                <View>
+                <View style={{height: '100%', display: 'flex', flex: 1}}>
                     <Text style={styles.inputTitle}>모임의 관심사를 선택해주세요!</Text>
-                    <View style={styles.groupCategories}>
-                        {categories.map((category) => (
-                            <TouchableOpacity
-                                key={category.id}
-                                style={[
-                                    styles.groupCategoryBox,
-                                    selectedCategories.includes(category.id) && styles.groupCategoryBoxCheck,
-                                ]}
-                                onPress={() => toggleCategory(category.id)}
-                            >
-                                <Text
+                    <ScrollView style={{height: '100%', marginBottom: 75}}>
+                        <View style={styles.groupCategories}>
+                            {categories.map((category) => (
+                                <TouchableOpacity
+                                    key={category.id}
                                     style={[
-                                        styles.groupCategoryText,
-                                        selectedCategories.includes(category.id) && {color: "white"},
+                                        styles.groupCategoryBox,
+                                        selectedCategories.includes(category.id) && styles.groupCategoryBoxCheck,
                                     ]}
+                                    onPress={() => toggleCategory(category.id)}
                                 >
-                                    {category.name}
-                                </Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
+                                    <Text
+                                        style={[
+                                            styles.groupCategoryText,
+                                            selectedCategories.includes(category.id) && {color: "white"},
+                                        ]}
+                                    >
+                                        {category.name}
+                                    </Text>
+                                </TouchableOpacity>
+                            ))}
+                        </View>
+                    </ScrollView>
                 </View>
 
                 <View style={styles.saveButtonBox}>

@@ -1,16 +1,19 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import HeaderComponent from "../../components/HeaderComponent";
 import Icon from "react-native-vector-icons/Ionicons";
+import Icons from "react-native-vector-icons/Ionicons";
 import GroupMembersComponent from "../../components/group/details/GroupMembersComponent";
 import {UserContext} from "../../context/UserContext";
+import GroupApplicationsComoponent from "../../components/group/details/GroupApplicationsComoponent";
+import api from "../../api/api";
 
 const GroupDetailScreen = ({route, navigation}) => {
     const {item = {}} = route.params || {}; // 기본값 처리
     const {userData} = useContext(UserContext);
     const [isJoin, setIsJoin] = useState(false);
-
-    console.log(item);
+    const [modalVisible, setModalVisible] = useState(false); // 모달 상태
+    const [loading, setLoading] = useState(false);
 
     const checkIfJoined = () => {
         const members = item.members || []; // 기본값 설정
@@ -18,11 +21,34 @@ const GroupDetailScreen = ({route, navigation}) => {
         setIsJoin(!!foundMember);
     };
 
+    const handleJoinGroup = async () => {
+        setLoading(true);
+        try {
+            const response = await api.post('/application', {
+                memberId: userData.id, // 현재 로그인한 유저의 ID로 교체
+                groupId: item.id, // 그룹 ID
+            });
+            if (response.status === 200) {
+                alert('모임 신청이 완료되었습니다.');
+                setIsJoin(true); // 가입 상태로 전환
+            }
+
+        } catch (error) {
+            if (error.response.status === 409) {
+                alert('이미 신청된 모임입니다.');
+            }
+
+            console.error('모임 신청 중 오류 발생:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+
     useEffect(() => {
-        const unsubscribe = navigation.addListener('focus', () => {
+        return navigation.addListener('focus', () => {
             checkIfJoined();
         });
-        return unsubscribe;
     }, [navigation, item.members, userData.id]);
 
     // 로딩 상태 처리
@@ -92,19 +118,51 @@ const GroupDetailScreen = ({route, navigation}) => {
                 <GroupMembersComponent item={item.members || []}/>
             </ScrollView>
 
-            {!isJoin && (
+            {!isJoin ? (
                 <View style={styles.groupJoinBtnContainer}>
                     <TouchableOpacity
                         style={[
                             styles.groupJoinBtn,
-                            !item.recruiting && {backgroundColor: '#ccc'}
+                            !item.recruiting && {backgroundColor: '#ccc'},
                         ]}
-                        disabled={!item.recruiting}
+                        disabled={!item.recruiting || loading}
+                        onPress={handleJoinGroup}
                     >
-                        <Text style={styles.groupJoinText}>가입하기</Text>
+                        {loading ? (
+                            <ActivityIndicator color="white"/>
+                        ) : (
+                            <Text style={styles.groupJoinText}>가입하기</Text>
+                        )}
+                    </TouchableOpacity>
+                </View>
+            ) : (
+                <View style={styles.groupAdminNav}>
+
+                    {/* 모임 가입 신청서 확인 */}
+                    <TouchableOpacity style={styles.groupAdminBtn}>
+                        <Icons name="trail-sign-sharp" size={22} color="white"/>
+                    </TouchableOpacity>
+
+                    {/* 모임 가입 신청서 확인 */}
+                    <TouchableOpacity
+                        style={styles.groupAdminBtn}
+                        onPress={() => setModalVisible(true)} // 모달 열기
+                    >
+                        <Icons name="mail" size={22} color="white"/>
+                    </TouchableOpacity>
+
+                    {/* 모임 설정 페이지 */}
+                    <TouchableOpacity style={styles.groupAdminBtn}>
+                        <Icons name="settings-sharp" size={22} color="white"/>
                     </TouchableOpacity>
                 </View>
             )}
+            {/* 모달 */}
+            <GroupApplicationsComoponent
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)} // 모달 닫기
+                groupId={item.id}
+            />
         </View>
     );
 };
@@ -202,7 +260,27 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 500,
         color: "white",
+    },
+    groupAdminNav: {
+        position: "absolute",
+        padding: 30,
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "flex-end",
+        alignItems: "flex-end",
+        gap: 10
+    },
+    groupAdminBtn: {
+        width: 50,
+        height: 50,
+        backgroundColor: "#6DB777",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 99
     }
-
 
 });
