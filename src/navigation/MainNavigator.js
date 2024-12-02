@@ -11,6 +11,7 @@ import MyGroupsScreen from "../screens/Group/MyGroupsScreen";
 import GroupDetailScreen from "../screens/Group/GroupDetailScreen";
 import PostDetailScreen from "../screens/Group/PostDetailScreen";
 import CommentListScreen from "../screens/Group/CommentListScreen";
+import CreatePost from "../screens/Group/CreatePostScreen";
 
 const Drawer = createDrawerNavigator();
 const GroupStack = createStackNavigator();
@@ -22,6 +23,7 @@ const GroupStackNavigator = () => {
             <GroupStack.Screen name="GroupDetails" component={GroupDetailScreen}/>
             <GroupStack.Screen name="PostDetail" component={PostDetailScreen}/>
             <GroupStack.Screen name="CommentList" component={CommentListScreen}/>
+            <GroupStack.Screen name="CreatePost" component={CreatePost}/>
 
         </GroupStack.Navigator>
     );

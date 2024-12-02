@@ -113,8 +113,11 @@ const GroupDetailScreen = ({route, navigation}) => {
                 </View>
             ) : (
                 <View style={styles.groupAdminNav}>
-                    <TouchableOpacity style={styles.groupAdminBtn}>
-                        <Icon name="trail-sign-sharp" size={22} color="white"/>
+                    <TouchableOpacity style={styles.groupAdminBtn} onPress={() => navigation.navigate("GroupStack", {
+                        screen: "CreatePost",
+                        params: {groupId : item.id}
+                    })}>
+                        <Icon name="pencil-outline" size={22} color="white"/>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={styles.groupAdminBtn}
