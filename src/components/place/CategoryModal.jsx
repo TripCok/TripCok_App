@@ -32,9 +32,10 @@ const CategoryModal = ({visible, setVisible, fetchCategories, selectedCategories
         try {
             setLoading(true);
             const data = await fetchCategories();
-            setCategories(data);
+            // 최상위 카테고리만 로드 (depth: 0)
+            setCategories(data.filter((category) => category.depth === 0));
         } catch (error) {
-            console.error("Failed to fetch categories:", error);
+            console.error('Failed to fetch categories:', error);
         } finally {
             setLoading(false);
         }
@@ -58,7 +59,7 @@ const CategoryModal = ({visible, setVisible, fetchCategories, selectedCategories
         if (selectedItems.length > 0) {
             onSave(selectedItems); // 부모 컴포넌트로 선택된 모든 카테고리 전달
         } else {
-            console.warn("No categories selected!");
+            console.warn('No categories selected!');
         }
 
         setSelectedCategory(null); // 선택된 카테고리 초기화
@@ -98,12 +99,15 @@ const CategoryModal = ({visible, setVisible, fetchCategories, selectedCategories
                             <Text style={styles.modalTitle}>
                                 {selectedCategory ? `카테고리: ${selectedCategory.name}` : '카테고리 선택'}
                             </Text>
+                            <Text style={styles.selectedCountText}>
+                                선택된 항목: {selectedSubCategories.length}개
+                            </Text>
                             {loading ? (
                                 <ActivityIndicator size="large" color="#6DB777"/>
                             ) : (
                                 <FlatList
                                     data={selectedCategory ? selectedCategory.children : categories}
-                                    keyExtractor={(item) => item.id.toString() + (selectedCategory ? '-child' : '-parent')}
+                                    keyExtractor={(item) => item.id.toString()}
                                     renderItem={({item}) => (
                                         <TouchableOpacity
                                             style={[
@@ -111,9 +115,9 @@ const CategoryModal = ({visible, setVisible, fetchCategories, selectedCategories
                                                 selectedSubCategories.includes(item.id) && styles.categoryItemCheck,
                                             ]}
                                             onPress={() =>
-                                                selectedCategory
-                                                    ? toggleSubCategorySelection(item.id)
-                                                    : setSelectedCategory(item)
+                                                item.children && item.children.length > 0
+                                                    ? setSelectedCategory(item) // 하위 카테고리가 있으면 해당 카테고리로 이동
+                                                    : toggleSubCategorySelection(item.id) // 하위 카테고리가 없으면 선택/해제
                                             }
                                         >
                                             <Text
@@ -122,7 +126,7 @@ const CategoryModal = ({visible, setVisible, fetchCategories, selectedCategories
                                                     selectedSubCategories.includes(item.id) && styles.categoryItemTextCheck,
                                                 ]}
                                             >
-                                                {item.name}
+                                                {item.name} {item.depth !== undefined ? `(Level ${item.depth})` : ''}
                                             </Text>
                                         </TouchableOpacity>
                                     )}
@@ -158,11 +162,13 @@ const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        height: '50%',
         justifyContent: 'center',
         alignItems: 'center',
     },
     modalContent: {
         width: '80%',
+        maxHeight: '80%',
         backgroundColor: '#fff',
         borderRadius: 10,
         padding: 20,
@@ -171,7 +177,12 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: 10,
+    },
+    selectedCountText: {
+        fontSize: 14,
+        color: '#6DB777',
+        marginBottom: 10,
     },
     categoryItem: {
         padding: 10,
@@ -211,9 +222,5 @@ const styles = StyleSheet.create({
     },
     closeButtonText: {
         color: '#000',
-    },
-    emptyText: {
-        textAlign: 'center',
-        color: '#999',
     },
 });

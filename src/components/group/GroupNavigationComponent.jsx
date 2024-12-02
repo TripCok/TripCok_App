@@ -1,27 +1,26 @@
-import React, {useContext, useState} from 'react';
-import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import React, {useState} from 'react';
+import {ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import CategoryModal from "../place/CategoryModal";
-import {CategoryContext} from "../../context/CategoryContext";
 import api from "../../api/api";
 
-const GroupNavigationComponent = () => {
+const GroupNavigationComponent = ({categories, setCategories}) => {
     const [modalVisible, setModalVisible] = useState(false);
-    const {selectedCategories, addCategories, removeCategory} = useContext(CategoryContext);
 
-    const fetchCategories = async () => {
-        try {
-            const response = await api.get('/place/category/all');
-            return response.data;
-        } catch (error) {
-            console.error("Failed to fetch categories:", error);
-            return [];
-        }
+    // 카테고리 추가
+    const handleSave = (selected) => {
+        const uniqueCategories = [...categories, ...selected].filter(
+            (category, index, self) =>
+                index === self.findIndex((t) => t.id === category.id)
+        ); // 중복 제거
+        console.log("Updated Categories:", uniqueCategories);
+        setCategories(uniqueCategories);
     };
 
     return (
         <View>
             <ScrollView horizontal style={styles.container}>
+                {/* 필터 아이콘 */}
                 <TouchableOpacity
                     style={styles.filterIconWrap}
                     onPress={() => setModalVisible(true)} // 모달 열기
@@ -31,26 +30,42 @@ const GroupNavigationComponent = () => {
                     </View>
                     <Text>카테고리</Text>
                 </TouchableOpacity>
-                {selectedCategories.map((category) => (
-                    <TouchableOpacity
-                        key={category.id}
-                        style={styles.selectedCategory}
-                        onPress={() => removeCategory(category)}
-                    >
-                        <Text style={styles.selectedCategoryText}>{category.name}</Text>
-                        <Icon name="close" size={16} color="#fff"/>
-                    </TouchableOpacity>
-                ))}
+
+                {/* 선택된 카테고리 표시 */}
+                {categories.length > 0 ? (
+                    categories.map((category) => (
+                        <TouchableOpacity
+                            key={category.id}
+                            style={styles.selectedCategory}
+                            onPress={() => {
+                                // 선택된 카테고리 제거
+                                setCategories(categories.filter((cat) => cat.id !== category.id));
+                            }}
+                        >
+                            <Text style={styles.selectedCategoryText}>{category.name}</Text>
+                            <Icon name="close" size={16} color="#fff"/>
+                        </TouchableOpacity>
+                    ))
+                ) : (
+                    <></>
+                )}
             </ScrollView>
+
+            {/* 카테고리 선택 모달 */}
             <CategoryModal
                 visible={modalVisible}
                 setVisible={setModalVisible}
-                fetchCategories={fetchCategories}
-                selectedCategories={selectedCategories}
-                onSave={(selected) => {
-                    console.log("저장된 카테고리:", selected); // 선택된 카테고리 확인
-                    addCategories(selected); // 여러 카테고리를 한 번에 추가
+                fetchCategories={async () => {
+                    try {
+                        const response = await api.get('/place/category/all');
+                        return response.data;
+                    } catch (error) {
+                        console.error("Failed to fetch categories:", error);
+                        return []; // 기본적으로 빈 배열 반환
+                    }
                 }}
+                selectedCategories={categories}
+                onSave={handleSave}
             />
         </View>
     );

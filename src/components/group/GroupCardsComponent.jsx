@@ -1,80 +1,35 @@
-import React, {useContext, useEffect, useState, useCallback} from 'react';
-import {ActivityIndicator, FlatList, StyleSheet, View} from "react-native";
+import React from "react";
+import {FlatList, ActivityIndicator, View, StyleSheet, Text} from "react-native";
 import GroupCardComponent from "./GroupCardComponent";
-import api from "../../api/api";
-import {GroupContext} from "../../context/GroupContext";
-import {useFocusEffect} from '@react-navigation/native';
 
-const GroupCardsComponent = ({navigation}) => {
-    const {groupData, setGroupData, page, setPage} = useContext(GroupContext);
-    const [loading, setLoading] = useState(false);
-    const [refreshing, setRefreshing] = useState(false); // 새로고침 상태 추가
-    const [error, setError] = useState(null);
-    const [hasMore, setHasMore] = useState(true);
-
-    const fetchData = async (currentPage, reset = false) => {
-        if (!hasMore && !reset) return;
-        setLoading(true);
-
-        try {
-            const response = await api.get('/group/all', {
-                params: {
-                    page: currentPage,
-                    size: 10,
-                    query: '',
-                },
-            });
-            const newContent = response.data.content || [];
-            setGroupData((prevData) =>
-                reset ? newContent : [...prevData, ...newContent]
-            );
-            setHasMore(newContent.length > 0);
-        } catch (err) {
-            setError(err.message || '데이터를 가져오는 중 오류가 발생했습니다.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const refreshData = async () => {
-        setRefreshing(true); // 새로고침 상태 시작
-        try {
-            await fetchData(0, true); // 첫 페이지 데이터 다시 로드
-        } finally {
-            setRefreshing(false); // 새로고침 상태 종료
-        }
-    };
-
-    useEffect(() => {
-        fetchData(page);
-    }, [page]);
-
-    useFocusEffect(
-        useCallback(() => {
-            setPage(0); // 첫 페이지로 리셋
-            fetchData(0, true); // 데이터를 리셋한 뒤 로드
-        }, [])
-    );
-
-    const loadMore = () => {
-        if (!loading && hasMore) {
-            setPage((prevPage) => prevPage + 1);
-        }
-    };
-
+const GroupCardsComponent = ({navigation, data, loading, refreshing, onRefresh, onLoadMore}) => {
     return (
         <FlatList
-            data={groupData}
+            data={data}
             renderItem={({item}) => <GroupCardComponent navigation={navigation} item={item}/>}
-            keyExtractor={(item, index) => `${item.id}-${index}`}
-            onEndReached={loadMore}
-            onEndReachedThreshold={0.5}
+            keyExtractor={(item, index) => `${item.id}-${index}-${item.groupName}`} // 고유한 키 생성
             refreshing={refreshing} // 새로고침 상태
-            onRefresh={refreshData} // 새로고침 함수
+            onRefresh={!refreshing ? onRefresh : undefined} // 중복 호출 방지
+            onEndReached={!loading ? onLoadMore : undefined} // 추가 로드
+            onEndReachedThreshold={0.5} // 스크롤 임계점
             ListFooterComponent={
                 loading ? (
                     <View style={styles.loaderContainer}>
                         <ActivityIndicator size="large" color="#0000ff"/>
+                    </View>
+                ) : (
+                    <View style={styles.noMoreData}>
+                        <Text style={styles.noMoreDataText}>
+                            {data.length === 0 ? "데이터가 없습니다." : "더 이상 결과가 없습니다."}
+                        </Text>
+                    </View>
+                )
+            }
+            contentContainerStyle={data.length === 0 ? styles.emptyContainer : styles.container}
+            ListEmptyComponent={
+                !loading && !refreshing ? (
+                    <View style={styles.emptyMessage}>
+                        <Text style={styles.emptyMessageText}>사용 가능한 모임이 없습니다.</Text>
                     </View>
                 ) : null
             }
@@ -86,11 +41,36 @@ export default GroupCardsComponent;
 
 const styles = StyleSheet.create({
     container: {
-        paddingHorizontal: 20,
+        paddingRight: 20,
     },
     loaderContainer: {
         padding: 10,
-        justifyContent: 'center',
-        alignItems: 'center',
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    noMoreData: {
+        padding: 10,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    noMoreDataText: {
+        color: "#888",
+        fontSize: 14,
+        fontStyle: "italic",
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    emptyMessage: {
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+    },
+    emptyMessageText: {
+        color: "#888",
+        fontSize: 16,
+        fontStyle: "italic",
     },
 });
