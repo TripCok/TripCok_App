@@ -104,7 +104,7 @@ const GroupApplicationsComponent = ({visible, onClose, groupId}) => {
                                 </View>
                             ) : applications.length === 0 ? (
                                 <View style={styles.centeredMessage}>
-                                    <Text>가입 신청자가 없습니다.</Text>
+                                    <Text style={{color:"#888"}}>가입 신청자가 없습니다.</Text>
                                 </View>
                             ) : (
                                 <FlatList
