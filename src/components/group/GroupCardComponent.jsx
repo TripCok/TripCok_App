@@ -6,7 +6,10 @@ const GroupCardComponent = ({navigation, item}) => {
     return (
         <TouchableOpacity
             style={styles.container}
-            onPress={() => navigation.navigate("GroupDetails", {item: item})}
+            onPress={() => navigation.navigate("GroupStack", {
+                screen: "GroupDetails",
+                params: { item: item },
+            })}
         >
 
             <Image source={{uri: "https://via.placeholder.com/150"}} style={styles.groupImage}/>

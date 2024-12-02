@@ -44,9 +44,9 @@ const BoardContent = ({navigation, item}) => {
             <View>
                 {posts.map(post => (
                     <TouchableOpacity key={post.id} style={styles.boardBox}
-                                      onPress={() => navigation.navigate("PostDetail", {
-                                          postId: post.id,
-                                          navigation: navigation
+                                      onPress={() => navigation.navigate("GroupStack", {
+                                          screen: "PostDetail",
+                                          params: {post: post}
                                       })}>
                         <Text style={{fontSize: 18}}>{post.type === "NOTICE" ?
                             <Text style={{fontWeight: 500, color: '#6DB777'}}>[ 공지 ] </Text> : <></>}{post.title}</Text>
