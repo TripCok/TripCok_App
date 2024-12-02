@@ -53,7 +53,7 @@ const HomeScreen = ({navigation}) => {
                     <TouchableOpacity style={styles.groupNavBox} onPress={() => navigation.navigate('GroupCreate')}>
                         <Text style={styles.groupNavTex}>모임{'\n'}만들기</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.groupNavBox} onPress={() => navigation.navigate('GroupList')}>
+                    <TouchableOpacity style={styles.groupNavBox} onPress={() => navigation.navigate("GroupStack", { screen: "GroupList" })}>
                         <Text style={styles.groupNavTex}>모임{'\n'}찾기</Text>
                     </TouchableOpacity>
                 </View>

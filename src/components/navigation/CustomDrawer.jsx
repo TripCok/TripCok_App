@@ -80,7 +80,7 @@ const CustomDrawer = ({navigation}) => {
                 <Text style={styles.menuItemTitle}>모임</Text>
                 <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigation.navigate("GroupList")}
+                    onPress={() => navigation.navigate("GroupStack", { screen: "GroupList" })}
                 >
                     <Text style={styles.menuText}>모든 모임</Text>
                 </TouchableOpacity>

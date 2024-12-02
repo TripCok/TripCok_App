@@ -1,5 +1,6 @@
 import React from "react";
 import {createDrawerNavigator} from "@react-navigation/drawer";
+import {createStackNavigator} from "@react-navigation/stack";
 import HomeScreen from "../screens/HomeScreen";
 import CustomDrawer from "../components/navigation/CustomDrawer";
 import PlaceListScreen from "../screens/Place/PlaceListScreen";
@@ -8,23 +9,37 @@ import CreateGroupScreen from "../screens/Group/CreateGroupScreen";
 import GroupListScreen from "../screens/Group/GroupListScreen";
 import MyGroupsScreen from "../screens/Group/MyGroupsScreen";
 import GroupDetailScreen from "../screens/Group/GroupDetailScreen";
+import PostDetailScreen from "../screens/Group/PostDetailScreen";
 
 const Drawer = createDrawerNavigator();
+const GroupStack = createStackNavigator();
 
+// GroupStackNavigator 정의
+const GroupStackNavigator = () => {
+    return (
+        <GroupStack.Navigator screenOptions={{ headerShown: false }}>
+            <GroupStack.Screen name="GroupList" component={GroupListScreen} />
+            <GroupStack.Screen name="GroupDetails" component={GroupDetailScreen} />
+            <GroupStack.Screen name="PostDetail" component={PostDetailScreen} />
+        </GroupStack.Navigator>
+    );
+};
+
+// MainNavigator 정의
 const MainNavigator = () => {
     return (
         <Drawer.Navigator
             initialRouteName="Home"
-            screenOptions={{headerShown: false}}
+            screenOptions={{ headerShown: false }}
             drawerContent={(props) => <CustomDrawer {...props} />}
         >
-            <Drawer.Screen name="Home" component={HomeScreen}/>
-            <Drawer.Screen name="PlaceList" component={PlaceListScreen}/>
-            <Drawer.Screen name="Place" component={PlaceScreen}/>
-            <Drawer.Screen name="GroupList" component={GroupListScreen}/>
-            <Drawer.Screen name="GroupDetails" component={GroupDetailScreen}/>
-            <Drawer.Screen name="GroupCreate" component={CreateGroupScreen}/>
-            <Drawer.Screen name="MyGroup" component={MyGroupsScreen}/>
+            <Drawer.Screen name="Home" component={HomeScreen} />
+            <Drawer.Screen name="PlaceList" component={PlaceListScreen} />
+            <Drawer.Screen name="Place" component={PlaceScreen} />
+            {/* GroupStackNavigator를 component로 전달 */}
+            <Drawer.Screen name="GroupStack" component={GroupStackNavigator} />
+            <Drawer.Screen name="GroupCreate" component={CreateGroupScreen} />
+            <Drawer.Screen name="MyGroup" component={MyGroupsScreen} />
         </Drawer.Navigator>
     );
 };
