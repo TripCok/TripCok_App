@@ -1,9 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import api from "../../../api/api";
 
+
 const BoardContent = ({navigation, item}) => {
     const [posts, setPosts] = useState([]);
+
     const fetchBoardContent = async () => {
         try {
             const response = await api.get('/posts', {
@@ -22,6 +24,8 @@ const BoardContent = ({navigation, item}) => {
 
         }
     }
+
+
 
     const formatDate = (isoString) => {
         const date = new Date(isoString);
@@ -46,7 +50,7 @@ const BoardContent = ({navigation, item}) => {
                     <TouchableOpacity key={post.id} style={styles.boardBox}
                                       onPress={() => navigation.navigate("GroupStack", {
                                           screen: "PostDetail",
-                                          params: {post: post}
+                                          params: {post: post.id}
                                       })}>
                         <Text style={{fontSize: 18}}>{post.type === "NOTICE" ?
                             <Text style={{fontWeight: 500, color: '#6DB777'}}>[ 공지 ] </Text> : <></>}{post.title}</Text>
@@ -73,7 +77,8 @@ export default BoardContent;
 
 const styles = StyleSheet.create({
     boardContent: {
-        marginTop: 20
+        marginTop: 20,
+
     },
     boardBox: {
         width: '100%',
