@@ -98,7 +98,14 @@ const GroupApplicationsComponent = ({visible, onClose, groupId}) => {
                             <Text style={styles.title}>가입 신청 목록</Text>
                             {error && <Text style={styles.error}>{error}</Text>}
                             {loading && applications.length === 0 ? (
-                                <ActivityIndicator size="large" color="#6DB777"/>
+                                <View style={styles.centeredMessage}>
+                                    <ActivityIndicator size="large" color="#6DB777" />
+                                    <Text>데이터를 불러오는 중입니다...</Text>
+                                </View>
+                            ) : applications.length === 0 ? (
+                                <View style={styles.centeredMessage}>
+                                    <Text>가입 신청자가 없습니다.</Text>
+                                </View>
                             ) : (
                                 <FlatList
                                     data={applications}
@@ -122,13 +129,13 @@ const GroupApplicationsComponent = ({visible, onClose, groupId}) => {
                                         </View>
                                     )}
                                     keyExtractor={(item) => item.id.toString()}
-                                    onEndReached={loadMore} // 스크롤 끝에 도달하면 호출
-                                    onEndReachedThreshold={0.5} // 스크롤의 50% 지점에서 loadMore 호출
-                                    refreshing={refreshing} // 새로고침 상태
-                                    onRefresh={handleRefresh} // 아래로 당길 때 새로고침
+                                    onEndReached={loadMore}
+                                    onEndReachedThreshold={0.5}
+                                    refreshing={refreshing}
+                                    onRefresh={handleRefresh}
                                     ListFooterComponent={
                                         loading && hasMore ? (
-                                            <ActivityIndicator size="large" color="#6DB777"/>
+                                            <ActivityIndicator size="large" color="#6DB777" />
                                         ) : null
                                     }
                                 />
