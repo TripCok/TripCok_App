@@ -1,11 +1,21 @@
 import React, {useContext, useEffect, useState} from 'react';
-import {FlatList, ImageBackground, Text, TouchableOpacity, View, StyleSheet, ActivityIndicator} from 'react-native';
+import {
+    FlatList,
+    ImageBackground,
+    Text,
+    TouchableOpacity,
+    View,
+    StyleSheet,
+    ActivityIndicator,
+    RefreshControl
+} from 'react-native';
 import {CategoryContext} from '../../context/CategoryContext';
 import api from "../../api/api";
 
 const PlaceCards = ({navigation}) => {
     const [places, setPlaces] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false); // 새로 고침 상태 추가
     const [error, setError] = useState(null);
     const {selectedCategories} = useContext(CategoryContext);
 
@@ -17,7 +27,14 @@ const PlaceCards = ({navigation}) => {
         try {
             setLoading(true);
             const categoryIds = selectedCategories.map((cat) => cat.id).join(',');
-            const response = await api.get(`/place?page=0&size=10&categories=${categoryIds}`);
+            const response = await api.get(`/place`, {
+                params: {
+                    page: 0,
+                    size: 10,
+                    categoryIds: categoryIds,
+                    name: ''
+                }
+            });
             const data = response.data.content;
 
             const formattedData = data.map((item) => ({
@@ -40,6 +57,12 @@ const PlaceCards = ({navigation}) => {
         return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
     };
 
+    const onRefresh = async () => {
+        setRefreshing(true);
+        await fetchPlaces();
+        setRefreshing(false);
+    };
+
     const CardItem = ({item}) => (
         <TouchableOpacity
             style={styles.card}
@@ -59,7 +82,7 @@ const PlaceCards = ({navigation}) => {
         </TouchableOpacity>
     );
 
-    if (loading) {
+    if (loading && !refreshing) { // 로딩 상태를 구분
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#6DB777"/>
@@ -85,6 +108,13 @@ const PlaceCards = ({navigation}) => {
             keyExtractor={(item) => item.id}
             numColumns={2}
             contentContainerStyle={styles.placeCardsContainer}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={["#6DB777"]} // 새로 고침 색상
+                />
+            }
         />
     );
 };
@@ -105,6 +135,7 @@ const styles = StyleSheet.create({
     card: {
         flex: 1,
         margin: 5,
+        maxWidth: '50%',
         borderRadius: 10,
         overflow: "hidden",
         backgroundColor: "#f0f0f0",
@@ -123,7 +154,6 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        // backgroundColor: "rgba(0, 0, 0, 0.5)",
     },
     title: {
         color: "#fff",
@@ -131,11 +161,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         flex: 1,
         lineHeight: 20,
-    },
-    pinButton: {
-        padding: 5,
-        backgroundColor: "#fff",
-        borderRadius: 20,
     },
     placeholder: {
         justifyContent: "center",

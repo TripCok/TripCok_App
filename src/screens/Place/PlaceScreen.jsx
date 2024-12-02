@@ -85,7 +85,6 @@ const PlaceScreen = ({route, navigation}) => {
                     </View>
                 ) : (
                     <View style={styles.placeholder}>
-                        <Text style={styles.placeholderText}>썸네일 없음</Text>
                         <TouchableOpacity style={styles.backIcon} onPress={() => navigation.navigate('PlaceList')}>
                             <Icon name="arrow-back-outline" size={40} color="black"/>
                         </TouchableOpacity>
@@ -96,13 +95,19 @@ const PlaceScreen = ({route, navigation}) => {
                     <Text style={styles.placeTitle}>{placeDetails.name}</Text>
 
                     <Text style={styles.placeTextTitle}>카테고리</Text>
+
                     <ScrollView horizontal style={styles.categoriesContainer}>
-                        {placeDetails.categories.map((category, index) => (
-                            <View key={index} style={styles.placeCategoryItem}>
-                                <Text style={styles.placeCategoryItemText}>{category}</Text>
-                            </View>
-                        ))}
+                        {placeDetails && placeDetails.categories && placeDetails.categories.length > 0 ? (
+                            placeDetails.categories.map((category, index) => (
+                                <View key={index} style={styles.placeCategoryItem}>
+                                    <Text style={styles.placeCategoryItemText}>{category}</Text>
+                                </View>
+                            ))
+                        ) : (
+                            <Text>카테고리가 없습니다.</Text>
+                        )}
                     </ScrollView>
+
 
                     <Text style={styles.placeTextTitle}>상세 보기</Text>
                     <Text style={styles.placeDesc}>{placeDetails.description}</Text>
@@ -144,8 +149,18 @@ const styles = StyleSheet.create({
     },
     thumbnailImageBox: {
         width: '100%',
-        height: 300,
+        minHeight: 300,
+        maxHeight: 300,
         position: 'relative',
+    },
+    thumbnailImage: {
+        minHeight: 300,
+        minWidth: '100%',
+        objectFit: 'cover',
+    },
+    placeholder:{
+        minHeight:300,
+        width:'100%',
     },
     backIcon: {
         position: 'absolute',
@@ -153,11 +168,7 @@ const styles = StyleSheet.create({
         padding: 20,
         color: '#6DB777',
     },
-    thumbnailImage: {
-        width: '100%',
-        height: '100%',
-        objectFit: 'cover',
-    },
+
     detailsContainer: {
         flex: 1,
         display: 'flex',
