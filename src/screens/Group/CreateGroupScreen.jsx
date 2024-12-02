@@ -166,7 +166,8 @@ const CreateGroupScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
     container: {
-        backgroundColor: '#fff',
+        flex: 1,
+        backgroundColor: 'white',
         width: '100%',
         height: '100%',
     },
