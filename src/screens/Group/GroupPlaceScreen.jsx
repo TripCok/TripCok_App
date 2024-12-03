@@ -1,119 +1,115 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
-import { FlatList, Image, StyleSheet, View, Dimensions } from "react-native";
-import MapView, { Marker } from "react-native-maps";
+import React, {useContext, useEffect, useRef, useState, useCallback} from "react";
+import {Dimensions, FlatList, Image, StyleSheet, View, ActivityIndicator} from "react-native";
+import MapView, {Marker} from "react-native-maps";
 import * as Location from "expo-location";
 import GroupPlaceHeader from "../../components/group/place/GroupPlaceHeader";
 import GroupPlaceCards from "../../components/group/place/GroupPlaceCards";
-import { UserContext } from "../../context/UserContext";
+import {UserContext} from "../../context/UserContext";
+import api from "../../api/api";
 
-const GroupPlaceScreen = ({ route }) => {
-    // Context 및 네비게이션
-    const { userData } = useContext(UserContext);
-    const navigation = route.params?.navigation;
-
-    // 장소 데이터
-    const items = [
-        {
-            name: "플레이데이터",
-            image: require("../../assets/images/p-2.png"),
-            order: 1,
-            latitude: 37.4864987317089,
-            longitude: 127.020663860591,
-        },
-        {
-            name: "정훈이네 집",
-            image: require("../../assets/images/p-3.png"),
-            order: 2,
-            latitude: 37.4852447288975,
-            longitude: 127.021557652003,
-        },
-        {
-            name: "망지네 집",
-            image: require("../../assets/images/p-1.png"),
-            order: 3,
-            latitude: 37.5294607910398,
-            longitude: 127.114054184816,
-        },
-    ];
-
-    // 상태 및 참조
+const GroupPlaceScreen = ({route, navigation}) => {
+    const {groupOwnerId, groupId} = route.params;
+    const {userData} = useContext(UserContext);
+    const [places, setPlaces] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
     const [currentRegion, setCurrentRegion] = useState(null);
-    const mapRef = useRef(null); // MapView 참조
-    const flatListRef = useRef(null); // FlatList 참조
+    const mapRef = useRef(null);
+    const flatListRef = useRef(null);
+
+    // API 호출 함수
+    const fetchGroupPlace = useCallback(async () => {
+        try {
+            setIsLoading(true); // 로딩 상태 시작
+            const response = await api.get(`/group/place/${groupId}/all`, {
+                params: {size: 100, page: 0},
+            });
+
+            if (response.status === 200) {
+                setPlaces(response.data.content);
+                console.log(response.data.content.length);
+            }
+        } catch (error) {
+            console.error("Failed to fetch group places:", error);
+        } finally {
+            setIsLoading(false); // 로딩 상태 종료
+        }
+    }, [groupId]);
+
+    // 컴포넌트 마운트 시 또는 groupId 변경 시 API 호출
+    useEffect(() => {
+        fetchGroupPlace();
+    }, [fetchGroupPlace]);
 
     // 현재 위치 가져오기 및 초기화
     useEffect(() => {
         const getLocation = async () => {
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== "granted") {
-                console.log("위치 권한이 거부되었습니다.");
-                navigation.goBack();
-                return;
-            }
+            try {
+                const {status} = await Location.requestForegroundPermissionsAsync();
+                if (status !== "granted") {
+                    console.log("위치 권한이 거부되었습니다.");
+                    navigation.goBack();
+                    return;
+                }
 
-            const location = await Location.getCurrentPositionAsync({});
-            const { latitude, longitude } = location.coords;
+                const location = await Location.getCurrentPositionAsync({});
 
-            if (items.length > 0) {
-                const firstItem = items.reduce((min, item) => (item.order < min.order ? item : min), items[0]);
-                setCurrentRegion({
-                    latitude: firstItem.latitude,
-                    longitude: firstItem.longitude,
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                });
-            } else {
-                setCurrentRegion({
-                    latitude,
-                    longitude,
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                });
+                if (places.length > 0) {
+                    const firstPlace = places[0];
+                    setCurrentRegion({
+                        latitude: firstPlace.placeLatitude,
+                        longitude: firstPlace.placeLongitude,
+                        latitudeDelta: 0.005,
+                        longitudeDelta: 0.005,
+                    });
+                } else {
+                    setCurrentRegion({
+                        latitude: location.coords.latitude,
+                        longitude: location.coords.longitude,
+                        latitudeDelta: 0.005,
+                        longitudeDelta: 0.005,
+                    });
+                }
+            } catch (error) {
+                console.error("Failed to get location:", error);
             }
         };
 
         getLocation();
-    }, [items]);
+    }, [places, navigation]);
 
     // 슬라이드 변경 시 지도 이동
     const handleScroll = (event) => {
         const viewWidth = Dimensions.get("screen").width;
         const index = Math.round(event.nativeEvent.contentOffset.x / viewWidth);
 
-        if (mapRef.current && items[index]) {
-            const { latitude, longitude } = items[index];
-            mapRef.current.animateToRegion(
-                {
-                    latitude,
-                    longitude,
-                    latitudeDelta: 0.005,
-                    longitudeDelta: 0.005,
-                },
-                500
-            );
+        if (mapRef.current && places[index]) {
+            const latitude =  places[index].placeLatitude;
+            const longitude =  places[index].placeLongitude;
+            mapRef.current.animateToRegion({
+                latitude,
+                longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+            }, 500);
         }
     };
 
     return (
         <View style={styles.container}>
             {/* 헤더 */}
-            <GroupPlaceHeader navigation={navigation} />
+            <GroupPlaceHeader navigation={navigation} groupOwnerId={groupOwnerId}/>
+
+            {/* 로딩 인디케이터 */}
+            {isLoading && <ActivityIndicator size="large" color="#6DB777" style={styles.loading}/>}
 
             {/* 지도 */}
             {currentRegion && (
-                <MapView
-                    ref={mapRef}
-                    style={styles.map}
-                    region={currentRegion}
-                >
-                    {items.map((item, index) => (
+                <MapView ref={mapRef} style={styles.map} region={currentRegion}>
+                    {places.map((place, index) => (
                         <Marker
                             key={index}
-                            coordinate={{
-                                latitude: item.latitude,
-                                longitude: item.longitude,
-                            }}
-                            title={item.name}
+                            coordinate={{latitude: place.placeLatitude, longitude: place.placeLongitude}}
+                            title={place.placeName}
                             style={styles.markerContainer}
                         >
                             <Image
@@ -128,8 +124,8 @@ const GroupPlaceScreen = ({ route }) => {
             {/* 슬라이드 */}
             <FlatList
                 ref={flatListRef}
-                data={items}
-                renderItem={({ item }) => <GroupPlaceCards item={item} />}
+                data={places}
+                renderItem={({item}) => <GroupPlaceCards item={item}/>}
                 horizontal
                 showsHorizontalScrollIndicator={false}
                 pagingEnabled
@@ -144,7 +140,6 @@ const GroupPlaceScreen = ({ route }) => {
 
 export default GroupPlaceScreen;
 
-// 스타일
 const styles = StyleSheet.create({
     container: {
         flex: 1,

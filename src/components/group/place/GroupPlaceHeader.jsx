@@ -1,25 +1,55 @@
-import React from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View, Dimensions } from "react-native";
+import React, {useState} from 'react';
+import {StyleSheet, TextInput, TouchableOpacity, View, Text, Dimensions, ScrollView} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
+import IconM from "react-native-vector-icons/MaterialCommunityIcons";
+import GroupPlaceOrderModal from "./GroupPlaceOrderModal";
 
-const GroupPlaceHeader = ({ navigation }) => {
+const GroupPlaceHeader = ({navigation, groupOwnerId}) => {
+
+    const [isOrderModalVisible, setOrderModalVisible] = useState(false);
+
+    const toggleOrderModal = () => {
+        setOrderModalVisible(!isOrderModalVisible);
+    };
+
+
     return (
         <View style={styles.mapsHeaderContainer}>
-            {/* 뒤로가기 버튼 */}
-            <TouchableOpacity style={styles.backButtonContainer} onPress={() => navigation.goBack()}>
-                <Icon name="chevron-back" size={30} color="#6DB777" />
-            </TouchableOpacity>
+            <View style={styles.firstSection}>
+                {/* 뒤로가기 버튼 */}
+                <TouchableOpacity style={styles.backButtonContainer} onPress={() => navigation.goBack()}>
+                    <Icon name="chevron-back" size={30} color="#6DB777"/>
+                </TouchableOpacity>
 
-            {/* 검색 입력창 */}
-            <View style={styles.searchBoxContainer}>
-                <Icon name="search-sharp" size={22} color="#888" style={styles.searchIcon} />
-                <TextInput style={styles.searchBox} placeholder="검색" />
+                {/* 검색 입력창 */}
+                <View style={styles.searchBoxContainer}>
+                    <Icon name="search-sharp" size={22} color="#888" style={styles.searchIcon}/>
+                    <TextInput style={styles.searchBox} placeholder="검색"/>
+                </View>
+
+                {/* 지도 전환 버튼 */}
+                <TouchableOpacity style={styles.mapButton}>
+                    <Icon name="list-sharp" size={22} color="white"/>
+                </TouchableOpacity>
             </View>
+            {groupOwnerId && (
+                <ScrollView horizontal style={styles.adminGroupPlaceNav}>
+                    <TouchableOpacity style={styles.adminGroupPlaceBox}>
+                        <IconM name="crown" size={22} color="white"></IconM>
+                    </TouchableOpacity>
 
-            {/* 지도 전환 버튼 */}
-            <TouchableOpacity style={styles.mapButton}>
-                <Icon name="list-sharp" size={22} color="white" />
-            </TouchableOpacity>
+                    <TouchableOpacity style={styles.adminGroupPlaceBox} onPress={toggleOrderModal}>
+                        <Text style={{color: 'white', fontWeight: 500}}>순서 조절</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.adminGroupPlaceBox}>
+                        <Text style={{color: 'white', fontWeight: 500}}>장소 추천</Text>
+                    </TouchableOpacity>
+                </ScrollView>)
+            }
+            {/* 순서 조절 모달 */}
+            <GroupPlaceOrderModal isVisible={isOrderModalVisible} toggleModal={toggleOrderModal}/>
+
         </View>
     );
 };
@@ -31,11 +61,14 @@ const styles = StyleSheet.create({
     mapsHeaderContainer: {
         position: "absolute",
         width: Dimensions.get("screen").width,
-        flexDirection: "row",
         paddingTop: 60,
         paddingHorizontal: 20,
         zIndex: 50,
-        justifyContent: "space-between",
+
+    },
+    firstSection: {
+        flexDirection: "row",
+        justifyContent: "space-between"
     },
     // 뒤로가기 및 지도 버튼
     backButtonContainer: {
@@ -70,5 +103,22 @@ const styles = StyleSheet.create({
         position: "absolute",
         zIndex: 1,
         right: 10,
+    }, adminGroupPlaceNav: {
+        marginTop: 10,
+        width: '100%',
+        display: "flex",
     },
+    adminGroupPlaceBox: {
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 99,
+        backgroundColor: "#6DB777",
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
+        marginRight: 10,
+    }
+
+
 });

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
     ActivityIndicator,
     ScrollView,
@@ -8,15 +8,15 @@ import {
     View,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import {UserContext} from "../../context/UserContext";
+import { UserContext } from "../../context/UserContext";
 import api from "../../api/api";
 import BoardContent from "../../components/group/details/BoardContent";
 import HomeContent from "../../components/group/details/HomeContent";
 import GroupApplicationsComoponent from "../../components/group/details/GroupApplicationsComoponent";
 
-const GroupDetailScreen = ({route, navigation}) => {
-    const {item = {}} = route.params || {};
-    const {userData} = useContext(UserContext);
+const GroupDetailScreen = ({ route, navigation }) => {
+    const { item = {} } = route.params || {};
+    const { userData } = useContext(UserContext);
 
     // 상태 관리
     const [isJoin, setIsJoin] = useState(false);
@@ -24,12 +24,20 @@ const GroupDetailScreen = ({route, navigation}) => {
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("home");
 
-    // 가입 여부 확인
-    const checkIfJoined = () => {
-        const members = item.members || [];
-        const foundMember = members.find((member) => member.id === userData.id);
-        setIsJoin(!!foundMember);
-    };
+    // 그룹 참여 여부 확인
+    useEffect(() => {
+        const checkIfJoined = () => {
+            const members = item.members || [];
+            setIsJoin(members.some((member) => member.id === userData.id));
+        };
+
+        const unsubscribe = navigation.addListener("focus", () => {
+            checkIfJoined();
+            setActiveTab("home"); // 탭 초기화
+        });
+
+        return unsubscribe;
+    }, [navigation, item.members, userData.id]);
 
     // 모임 가입 처리
     const handleJoinGroup = async () => {
@@ -46,29 +54,25 @@ const GroupDetailScreen = ({route, navigation}) => {
         } catch (error) {
             if (error.response?.status === 409) {
                 alert("이미 신청된 모임입니다.");
+            } else {
+                console.error("모임 신청 중 오류 발생:", error);
             }
-            console.error("모임 신청 중 오류 발생:", error);
         } finally {
             setLoading(false);
         }
     };
 
-    // 화면 진입 시 상태 초기화
-    useEffect(() => {
-        const unsubscribe = navigation.addListener("focus", () => {
-            checkIfJoined();
-            setActiveTab("home");
-        });
-        return unsubscribe;
-    }, [navigation, item.members, userData.id]);
+    // 로딩 화면
+    const renderLoading = () => (
+        <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#6DB777" />
+            <Text>로딩 중...</Text>
+        </View>
+    );
 
-    // 데이터가 없는 경우 로딩 화면
+    // 데이터가 없는 경우 로딩 화면 표시
     if (!item || Object.keys(item).length === 0) {
-        return (
-            <View style={styles.loadingContainer}>
-                <Text>로딩 중...</Text>
-            </View>
-        );
+        return renderLoading();
     }
 
     return (
@@ -78,56 +82,44 @@ const GroupDetailScreen = ({route, navigation}) => {
                 {/* 헤더 */}
                 <View style={styles.groupTitleBox}>
                     <TouchableOpacity onPress={() => navigation.navigate("GroupList")}>
-                        <Icon name="chevron-back" size={28}/>
+                        <Icon name="chevron-back" size={28} />
                     </TouchableOpacity>
                     <Text style={styles.groupTitle}>{item.groupName}</Text>
                 </View>
 
                 {/* 탭 네비게이션 */}
                 <View style={styles.groupDetailNav}>
-                    <TouchableOpacity
-                        style={[
-                            styles.groupDetailNavBtn,
-                            activeTab === "home" && styles.activeTab,
-                        ]}
-                        onPress={() => setActiveTab("home")}
-                    >
-                        <Text style={styles.groupDetailNavTitle}>홈</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[
-                            styles.groupDetailNavBtn,
-                            activeTab === "board" && styles.activeTab,
-                        ]}
-                        onPress={() => setActiveTab("board")}
-                    >
-                        <Text style={styles.groupDetailNavTitle}>게시판</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={[
-                            styles.groupDetailNavBtn,
-                            activeTab === "travel" && styles.activeTab,
-                        ]}
-                        onPress={() =>
-                            navigation.navigate("GroupStack", {
-                                screen: "GroupPlace",
-                                params: {
-                                    navigation,
-                                    groupId: item.id,
-                                    groupOwnerId: item.groupOwnerId,
-                                },
-                            })
-                        }
-                    >
-                        <Text style={styles.groupDetailNavTitle}>여행지</Text>
-                    </TouchableOpacity>
+                    {["home", "board", "travel"].map((tab) => (
+                        <TouchableOpacity
+                            key={tab}
+                            style={[
+                                styles.groupDetailNavBtn,
+                                activeTab === tab && styles.activeTab,
+                            ]}
+                            onPress={() =>
+                                tab === "travel"
+                                    ? navigation.navigate("GroupStack", {
+                                        screen: "GroupPlace",
+                                        params: {
+                                            groupId: item.id,
+                                            groupOwnerId: item.groupOwnerId,
+                                        },
+                                    })
+                                    : setActiveTab(tab)
+                            }
+                        >
+                            <Text style={styles.groupDetailNavTitle}>
+                                {tab === "home" ? "홈" : tab === "board" ? "게시판" : "여행지"}
+                            </Text>
+                        </TouchableOpacity>
+                    ))}
                 </View>
 
                 {/* 활성화된 탭에 따른 콘텐츠 */}
                 {activeTab === "home" ? (
-                    <HomeContent item={item}/>
+                    <HomeContent item={item} />
                 ) : (
-                    <BoardContent item={item} navigation={navigation}/>
+                    <BoardContent item={item} navigation={navigation} />
                 )}
             </ScrollView>
 
@@ -143,51 +135,39 @@ const GroupDetailScreen = ({route, navigation}) => {
                         onPress={handleJoinGroup}
                     >
                         {loading ? (
-                            <ActivityIndicator color="white"/>
+                            <ActivityIndicator color="white" />
                         ) : (
                             <Text style={styles.groupJoinText}>가입하기</Text>
                         )}
                     </TouchableOpacity>
                 </View>
-            ) : (item.groupOwnerId === userData.id ? (
-                    <View style={styles.groupAdminNav}>
-                        <TouchableOpacity
-                            style={styles.groupAdminBtn}
-                            onPress={() =>
-                                navigation.navigate("GroupStack", {
-                                    screen: "CreatePost",
-                                    params: {navigation, groupId: item.id},
-                                })
-                            }
-                        >
-                            <Icon name="pencil-outline" size={22} color="white"/>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={styles.groupAdminBtn}
-                            onPress={() => setModalVisible(true)}
-                        >
-                            <Icon name="mail" size={22} color="white"/>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.groupAdminBtn}>
-                            <Icon name="settings-sharp" size={22} color="white"/>
-                        </TouchableOpacity>
-                    </View>
-                ) : (
-                    <View style={styles.groupAdminNav}>
-                        <TouchableOpacity
-                            style={styles.groupAdminBtn}
-                            onPress={() =>
-                                navigation.navigate("GroupStack", {
-                                    screen: "CreatePost",
-                                    params: {navigation, groupId: item.id},
-                                })
-                            }
-                        >
-                            <Icon name="pencil-outline" size={22} color="white"/>
-                        </TouchableOpacity>
-                    </View>
-                )
-
+            ) : (
+                <View style={styles.groupAdminNav}>
+                    <TouchableOpacity
+                        style={styles.groupAdminBtn}
+                        onPress={() =>
+                            navigation.navigate("GroupStack", {
+                                screen: "CreatePost",
+                                params: { groupId: item.id },
+                            })
+                        }
+                    >
+                        <Icon name="pencil-outline" size={22} color="white" />
+                    </TouchableOpacity>
+                    {item.groupOwnerId === userData.id && (
+                        <>
+                            <TouchableOpacity
+                                style={styles.groupAdminBtn}
+                                onPress={() => setModalVisible(true)}
+                            >
+                                <Icon name="mail" size={22} color="white" />
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.groupAdminBtn}>
+                                <Icon name="settings-sharp" size={22} color="white" />
+                            </TouchableOpacity>
+                        </>
+                    )}
+                </View>
             )}
 
             {/* 모임 신청 모달 */}
@@ -205,14 +185,12 @@ export default GroupDetailScreen;
 // 스타일
 const styles = StyleSheet.create({
     screenContainer: {
-        position: "relative",
-        height: "100%",
-        paddingTop: 64,
+        flex: 1,
         backgroundColor: "#fff",
+        paddingTop: 64,
     },
     container: {
         paddingHorizontal: 20,
-        backgroundColor: "#fff",
     },
     loadingContainer: {
         flex: 1,
@@ -238,7 +216,6 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
     },
     groupDetailNavTitle: {
-        textAlign: "center",
         fontSize: 16,
         fontWeight: "500",
     },
@@ -247,9 +224,7 @@ const styles = StyleSheet.create({
         borderColor: "#6DB777",
     },
     groupJoinBtnContainer: {
-        width: "100%",
-        paddingTop: 10,
-        paddingBottom: 30,
+        padding: 10,
         alignItems: "center",
         borderTopWidth: 2,
         borderColor: "#dadada",
@@ -258,9 +233,8 @@ const styles = StyleSheet.create({
         width: "80%",
         height: 40,
         backgroundColor: "#6DB777",
-        flexDirection: "row",
-        alignItems: "center",
         justifyContent: "center",
+        alignItems: "center",
         borderRadius: 99,
     },
     disabledJoinBtn: {
@@ -268,17 +242,13 @@ const styles = StyleSheet.create({
     },
     groupJoinText: {
         fontSize: 16,
-        fontWeight: "500",
         color: "white",
     },
     groupAdminNav: {
         position: "absolute",
-        padding: 30,
-        width: "100%",
-        height: "100%",
+        bottom: 30,
+        right: 30,
         flexDirection: "column",
-        justifyContent: "flex-end",
-        alignItems: "flex-end",
         gap: 10,
     },
     groupAdminBtn: {
