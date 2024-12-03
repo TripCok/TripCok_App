@@ -10,6 +10,7 @@ const GroupPlaceSearch = ({isVisible, text, groupId, groupOwnerId}) => {
     const {userData} = useContext(UserContext);
     const [searchResult, setSearchResult] = useState([]); // 빈 배열로 초기화
 
+
     const fetchResults = async () => {
         if (!text.trim()) return; // 검색어가 비어 있을 경우 요청하지 않음
 
@@ -21,7 +22,6 @@ const GroupPlaceSearch = ({isVisible, text, groupId, groupOwnerId}) => {
                 },
             });
             if (response.status === 200) {
-                console.log("Search Results:", response.data.content);
                 setSearchResult(response.data.content || []); // 검색 결과 배열로 설정
             } else {
                 setSearchResult([]); // 데이터가 없을 경우 빈 배열
@@ -62,7 +62,7 @@ const GroupPlaceSearch = ({isVisible, text, groupId, groupOwnerId}) => {
                 }
             });
             if (response.status === 200) {
-                alert(response.data.message);
+                alert("해당 여행지가 삭제되었습니다.");
                 fetchGroupPlaces(groupId); // 그룹 장소 새로고침
             }
         } catch (error) {

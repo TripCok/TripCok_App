@@ -37,8 +37,7 @@ const MainNavigator = () => {
         <Drawer.Navigator
             initialRouteName="Home"
             screenOptions={{headerShown: false, drawerPosition: "left"}}
-            drawerContent={(props) => <CustomDrawer {...props} />}
-        >
+            drawerContent={(props) => <CustomDrawer {...props} />}>
             <Drawer.Screen name="Home" component={HomeScreen}/>
             <Drawer.Screen name="PlaceList" component={PlaceListScreen}/>
             <Drawer.Screen name="Place" component={PlaceScreen}/>

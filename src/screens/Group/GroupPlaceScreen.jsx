@@ -33,8 +33,8 @@ const GroupPlaceScreen = ({route, navigation}) => {
                 setCurrentRegion(
                     firstPlace
                         ? {
-                            latitude: firstPlace.placeLatitude,
-                            longitude: firstPlace.placeLongitude,
+                            latitude: parseFloat(firstPlace.placeLatitude),
+                            longitude: parseFloat(firstPlace.placeLongitude),
                             latitudeDelta: 0.005,
                             longitudeDelta: 0.005,
                         }
@@ -61,8 +61,8 @@ const GroupPlaceScreen = ({route, navigation}) => {
         if (mapRef.current && places[index]) {
             mapRef.current.animateToRegion(
                 {
-                    latitude: places[index].placeLatitude,
-                    longitude: places[index].placeLongitude,
+                    latitude: parseFloat(places[index].placeLatitude),
+                    longitude: parseFloat(places[index].placeLongitude),
                     latitudeDelta: 0.005,
                     longitudeDelta: 0.005,
                 },
@@ -83,8 +83,8 @@ const GroupPlaceScreen = ({route, navigation}) => {
                         <Marker
                             key={index}
                             coordinate={{
-                                latitude: place.placeLatitude,
-                                longitude: place.placeLongitude,
+                                latitude: parseFloat(place.placeLatitude),
+                                longitude: parseFloat(place.placeLongitude),
                             }}
                             title={place.placeName}
                             style={styles.markerContainer}

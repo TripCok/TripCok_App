@@ -77,7 +77,7 @@ const CreateGroupScreen = ({navigation}) => {
 
             if (response.status === 201) {
                 console.log("성공적으로 모임을 생성 성공");
-                navigation.navigate("GroupDetails", {item: response.data}); // 상세 페이지로 이동
+                navigation.navigate("GroupStack", {screen: "GroupDetails", params: {item: response.data}}); // 상세 페이지로 이동
             }
         } catch (error) {
             console.error("Error creating group:", error);
