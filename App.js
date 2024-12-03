@@ -5,6 +5,7 @@ import UserProvider from "./src/context/UserProvider";
 import CategoryProvider from './src/context/CategoryContext';
 import OnboardingProvider from "./src/context/OnboardingContext";
 import {GroupProvider} from "./src/context/GroupContext";
+import {GroupPlaceProvider} from "./src/context/GroupPlaceContext";
 
 export default function App() {
     return (
@@ -12,9 +13,11 @@ export default function App() {
             <OnboardingProvider>
                 <GroupProvider>
                     <CategoryProvider>
-                        <NavigationContainer>
-                            <AppNavigator/>
-                        </NavigationContainer>
+                        <GroupPlaceProvider>
+                            <NavigationContainer>
+                                <AppNavigator/>
+                            </NavigationContainer>
+                        </GroupPlaceProvider>
                     </CategoryProvider>
                 </GroupProvider>
             </OnboardingProvider>

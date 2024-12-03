@@ -1,10 +1,13 @@
-import React from 'react';
-import { StyleSheet, View, Image, Text, TouchableOpacity, Dimensions } from "react-native";
+import React, {useContext} from 'react';
+import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import api from "../../../api/api";
+import {GroupPlaceContext} from "../../../context/GroupPlaceContext";
 
-const GroupPlaceCards = ({ item }) => {
+const GroupPlaceCards = ({item}) => {
+
+
     // 이미지 URL 생성 함수
-    const getFullImageUrl = (images) => {
+    const getFullImageUrl = () => {
         if (item.placeThumbnail) {
             /* T*/
             const baseURL = api.defaults?.baseURL || "http://localhost:8080";
@@ -20,7 +23,7 @@ const GroupPlaceCards = ({ item }) => {
         <View style={styles.container}>
             <TouchableOpacity style={styles.placeCard} activeOpacity={0.8}>
                 {/* 이미지 표시 */}
-                <Image source={getFullImageUrl(item.images)} style={styles.placeCardImage} />
+                <Image source={getFullImageUrl(item.images)} style={styles.placeCardImage}/>
                 <View style={styles.placeDetails}>
                     <Text style={styles.placeOrder}>{item.orders}번째 장소</Text>
                     <Text style={styles.placeName}>{item.placeName}</Text>
@@ -69,7 +72,7 @@ const styles = StyleSheet.create({
         whiteSpace: 'nowrap',
         fontSize: 16,
         fontWeight: 'bold',
-        marginBottom:10
+        marginBottom: 10
     },
     placeOrder: {
         marginTop: 5,

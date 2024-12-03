@@ -3,15 +3,29 @@ import {StyleSheet, TextInput, TouchableOpacity, View, Text, Dimensions, ScrollV
 import Icon from "react-native-vector-icons/Ionicons";
 import IconM from "react-native-vector-icons/MaterialCommunityIcons";
 import GroupPlaceOrderModal from "./GroupPlaceOrderModal";
+import GroupPlaceSearch from "./GroupPlaceSearch";
 
-const GroupPlaceHeader = ({navigation, groupOwnerId}) => {
+const GroupPlaceHeader = ({navigation, groupOwnerId, groupId}) => {
 
     const [isOrderModalVisible, setOrderModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState("");
+    const [isSearchResultVisible, setSearchResultVisible] = useState(false);
 
     const toggleOrderModal = () => {
         setOrderModalVisible(!isOrderModalVisible);
     };
 
+    const searchResult = (text) => {
+        setSearchText(text); // 상태 업데이트
+
+        /* 아무것도 없을 경우에 */
+        if (!text.trim()) {
+            setSearchResultVisible(false);
+            return;
+        }
+
+        setSearchResultVisible(true);
+    };
 
     return (
         <View style={styles.mapsHeaderContainer}>
@@ -24,7 +38,8 @@ const GroupPlaceHeader = ({navigation, groupOwnerId}) => {
                 {/* 검색 입력창 */}
                 <View style={styles.searchBoxContainer}>
                     <Icon name="search-sharp" size={22} color="#888" style={styles.searchIcon}/>
-                    <TextInput style={styles.searchBox} placeholder="검색"/>
+                    <TextInput style={styles.searchBox} placeholder="검색" value={searchText}
+                               onChangeText={(text) => searchResult(text)}/>
                 </View>
 
                 {/* 지도 전환 버튼 */}
@@ -32,6 +47,11 @@ const GroupPlaceHeader = ({navigation, groupOwnerId}) => {
                     <Icon name="list-sharp" size={22} color="white"/>
                 </TouchableOpacity>
             </View>
+
+            {/* 검색 결과 */}
+            <GroupPlaceSearch isVisible={isSearchResultVisible} text={searchText} groupId={groupId} groupOwnerId={groupOwnerId}/>
+
+
             {groupOwnerId && (
                 <ScrollView horizontal style={styles.adminGroupPlaceNav}>
                     <TouchableOpacity style={styles.adminGroupPlaceBox}>
