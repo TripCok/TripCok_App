@@ -17,53 +17,66 @@ const GroupListScreen = ({ navigation }) => {
     // 데이터 가져오기 함수
     const fetchData = useCallback(
         async (reset = false) => {
-            if (loading) return;
-            setLoading(true);
+            if (loading || (reset && refreshing)) return; // 중복 호출 방지
+            if (!reset && !hasMoreData) return; // 추가 데이터가 없으면 호출 중단
+
+            if (reset) {
+                setRefreshing(true); // 새로고침 시작
+            } else {
+                setLoading(true); // 추가 데이터 로딩 시작
+            }
 
             try {
+                const currentPage = reset ? 0 : page;
+
                 const response = await api.get("/group/all", {
                     params: {
                         categoryIds: categories.length > 0 ? categories.map((category) => category.id) : [],
-                        page: reset ? 0 : page,
+                        page: currentPage,
                         size: 10,
                     },
                 });
 
                 const newData = response.data.content || [];
 
-                // 중복 데이터 제거
                 const uniqueData = reset
-                    ? newData
-                    : [...groupData, ...newData].filter(
-                        (item, index, self) => index === self.findIndex((t) => t.id === item.id)
-                    );
+                    ? newData // 새로고침이면 기존 데이터 초기화
+                    : groupData.concat(newData.filter((item) => !groupData.some((existing) => existing.id === item.id)));
 
                 setGroupData(uniqueData);
-                setHasMoreData(newData.length > 0); // 데이터가 더 있는지 확인
-                if (!reset) setPage((prevPage) => prevPage + 1);
+                setHasMoreData(newData.length > 0); // 새로운 데이터가 있으면 true
+                if (!reset && newData.length > 0) {
+                    setPage(currentPage + 1); // 페이지 증가
+                }
             } catch (err) {
                 console.error("API Error:", err.message);
                 setError(err.message || "데이터를 가져오는 중 오류가 발생했습니다.");
             } finally {
-                setLoading(false);
+                if (reset) {
+                    setRefreshing(false); // 새로고침 종료
+                } else {
+                    setLoading(false); // 추가 로딩 종료
+                }
             }
         },
-        [categories, page, groupData, loading]
+        [categories, page, groupData, loading, refreshing, hasMoreData]
     );
 
-    const refreshData = async () => {
-        if (refreshing) return; // 중복 새로고침 방지
-        setRefreshing(true);
-        await fetchData(true); // 데이터 초기화 후 새로 로드
-        setRefreshing(false);
-    };
+    // 새로고침 함수
+    const refreshData = useCallback(async () => {
+        await fetchData(true); // 데이터를 초기화 후 새로 로드
+        setPage(0); // 페이지 초기화
+    }, [fetchData]);
 
+    // 처음 로드
     useEffect(() => {
-        fetchData(true); // 초기 로드
+        fetchData(true); // 데이터 초기화 후 로드
     }, []);
 
+    // 카테고리 변경 시 새로고침
     useEffect(() => {
-        fetchData(true); // 카테고리 변경 시 데이터 초기화 후 새로 로드
+        setPage(0); // 페이지 초기화
+        fetchData(true); // 카테고리 변경 시 데이터 초기화 후 로드
     }, [categories]);
 
     return (
@@ -79,7 +92,7 @@ const GroupListScreen = ({ navigation }) => {
                 loading={loading}
                 refreshing={refreshing}
                 onRefresh={refreshData}
-                onLoadMore={hasMoreData && !loading ? () => fetchData() : null} // 추가 로드 시 중복 방지
+                onLoadMore={hasMoreData && !loading ? () => fetchData() : null}
             />
         </View>
     );

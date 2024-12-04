@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {
     ActivityIndicator,
     ScrollView,
@@ -8,21 +8,23 @@ import {
     View,
 } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import { UserContext } from "../../context/UserContext";
+import {UserContext} from "../../context/UserContext";
 import api from "../../api/api";
 import BoardContent from "../../components/group/details/BoardContent";
 import HomeContent from "../../components/group/details/HomeContent";
 import GroupApplicationsComoponent from "../../components/group/details/GroupApplicationsComoponent";
+import GroupSettingsModal from "../../components/group/details/GroupSettingsModal";
 
-const GroupDetailScreen = ({ route, navigation }) => {
-    const { item = {} } = route.params || {};
-    const { userData } = useContext(UserContext);
+const GroupDetailScreen = ({route, navigation}) => {
+    const {item = {}} = route.params || {};
+    const {userData} = useContext(UserContext);
 
     // 상태 관리
     const [isJoin, setIsJoin] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState("home");
+    const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
     // 그룹 참여 여부 확인
     useEffect(() => {
@@ -47,7 +49,7 @@ const GroupDetailScreen = ({ route, navigation }) => {
                 memberId: userData.id,
                 groupId: item.id,
             });
-            if (response.status === 200) {
+            if (response.status === 201) {
                 alert("모임 신청이 완료되었습니다.");
                 setIsJoin(true);
             }
@@ -65,7 +67,7 @@ const GroupDetailScreen = ({ route, navigation }) => {
     // 로딩 화면
     const renderLoading = () => (
         <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#6DB777" />
+            <ActivityIndicator size="large" color="#6DB777"/>
             <Text>로딩 중...</Text>
         </View>
     );
@@ -82,7 +84,7 @@ const GroupDetailScreen = ({ route, navigation }) => {
                 {/* 헤더 */}
                 <View style={styles.groupTitleBox}>
                     <TouchableOpacity onPress={() => navigation.navigate("GroupList")}>
-                        <Icon name="chevron-back" size={28} />
+                        <Icon name="chevron-back" size={28}/>
                     </TouchableOpacity>
                     <Text style={styles.groupTitle}>{item.groupName}</Text>
                 </View>
@@ -117,9 +119,9 @@ const GroupDetailScreen = ({ route, navigation }) => {
 
                 {/* 활성화된 탭에 따른 콘텐츠 */}
                 {activeTab === "home" ? (
-                    <HomeContent item={item} />
+                    <HomeContent item={item}/>
                 ) : (
-                    <BoardContent item={item} navigation={navigation} />
+                    <BoardContent item={item} navigation={navigation}/>
                 )}
             </ScrollView>
 
@@ -135,7 +137,7 @@ const GroupDetailScreen = ({ route, navigation }) => {
                         onPress={handleJoinGroup}
                     >
                         {loading ? (
-                            <ActivityIndicator color="white" />
+                            <ActivityIndicator color="white"/>
                         ) : (
                             <Text style={styles.groupJoinText}>가입하기</Text>
                         )}
@@ -148,11 +150,11 @@ const GroupDetailScreen = ({ route, navigation }) => {
                         onPress={() =>
                             navigation.navigate("GroupStack", {
                                 screen: "CreatePost",
-                                params: { groupId: item.id },
+                                params: {groupId: item.id},
                             })
                         }
                     >
-                        <Icon name="pencil-outline" size={22} color="white" />
+                        <Icon name="pencil-outline" size={22} color="white"/>
                     </TouchableOpacity>
                     {item.groupOwnerId === userData.id && (
                         <>
@@ -160,10 +162,10 @@ const GroupDetailScreen = ({ route, navigation }) => {
                                 style={styles.groupAdminBtn}
                                 onPress={() => setModalVisible(true)}
                             >
-                                <Icon name="mail" size={22} color="white" />
+                                <Icon name="mail" size={22} color="white"/>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.groupAdminBtn}>
-                                <Icon name="settings-sharp" size={22} color="white" />
+                            <TouchableOpacity style={styles.groupAdminBtn} onPress={() => setIsSettingsModalOpen(true)}>
+                                <Icon name="settings-sharp" size={22} color="white"/>
                             </TouchableOpacity>
                         </>
                     )}
@@ -175,6 +177,13 @@ const GroupDetailScreen = ({ route, navigation }) => {
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 groupId={item.id}
+            />
+
+            <GroupSettingsModal
+                visible={isSettingsModalOpen}
+                onClose={() => setIsSettingsModalOpen(false)}
+                group={item}
+                navigation={navigation}
             />
         </View>
     );

@@ -44,7 +44,7 @@ const GroupPlaceSearch = ({isVisible, text, groupId, groupOwnerId}) => {
                 headers: {"Content-Type": "application/json"},
             });
             if (response.status === 201) {
-                alert(response.data.message);
+                alert("여행지가 추가되었습니다.");
                 fetchGroupPlaces(groupId); // 그룹 장소 새로고침
             }
         } catch (error) {

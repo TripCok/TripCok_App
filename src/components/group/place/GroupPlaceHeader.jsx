@@ -42,24 +42,31 @@ const GroupPlaceHeader = ({navigation, groupOwnerId, groupId}) => {
                                onChangeText={(text) => searchResult(text)}/>
                 </View>
 
-                {/* 지도 전환 버튼 */}
-                <TouchableOpacity style={styles.mapButton}>
+                {/* 지도 리스트 형태로 전환 페이지 버튼 */}
+                <TouchableOpacity
+                    style={styles.mapButton}
+                    onPress={() =>
+                        navigation.navigate("GroupStack", {
+                            screen: "GroupPlaceList",
+                            params: {
+                                groupId: groupId, // navigation 제거
+                            },
+                        })
+                    }
+                >
                     <Icon name="list-sharp" size={22} color="white"/>
                 </TouchableOpacity>
             </View>
 
             {/* 검색 결과 */}
-            <GroupPlaceSearch isVisible={isSearchResultVisible} text={searchText} groupId={groupId} groupOwnerId={groupOwnerId}/>
+            <GroupPlaceSearch isVisible={isSearchResultVisible} text={searchText} groupId={groupId}
+                              groupOwnerId={groupOwnerId}/>
 
 
             {groupOwnerId && (
                 <ScrollView horizontal style={styles.adminGroupPlaceNav}>
                     <TouchableOpacity style={styles.adminGroupPlaceBox}>
                         <IconM name="crown" size={22} color="white"></IconM>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.adminGroupPlaceBox} onPress={toggleOrderModal}>
-                        <Text style={{color: 'white', fontWeight: 500}}>순서 조절</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.adminGroupPlaceBox}>

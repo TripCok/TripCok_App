@@ -122,9 +122,9 @@ const CommentListScreen = ({navigation, route}) => {
                             <View style={styles.bottomNav}>
                                 < Text style={{color: '#888'}}>{formatDate(comment.createTime)}</Text>
                                 <View style={{flexDirection: "row", gap: 10}}>
-                                    <TouchableOpacity style={styles.bottomNavBtn}>
-                                        <Text style={{color: 'white'}}>수정</Text>
-                                    </TouchableOpacity>
+                                    {/*<TouchableOpacity style={styles.bottomNavBtn}>*/}
+                                    {/*    <Text style={{color: 'white'}}>수정</Text>*/}
+                                    {/*</TouchableOpacity>*/}
                                     <TouchableOpacity style={styles.bottomNavBtn}
                                                       onPress={() => deletePostComment(comment.id)}>
                                         <Text style={{color: 'white'}}>삭제</Text>

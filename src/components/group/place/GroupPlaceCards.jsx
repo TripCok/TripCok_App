@@ -1,9 +1,8 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {Dimensions, Image, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import api from "../../../api/api";
-import {GroupPlaceContext} from "../../../context/GroupPlaceContext";
 
-const GroupPlaceCards = ({item}) => {
+const GroupPlaceCards = ({item, onPress}) => {
 
 
     // 이미지 URL 생성 함수
@@ -20,8 +19,8 @@ const GroupPlaceCards = ({item}) => {
     };
 
     return (
-        <View style={styles.container}>
-            <TouchableOpacity style={styles.placeCard} activeOpacity={0.8}>
+        <View style={styles.container} >
+            <TouchableOpacity style={styles.placeCard} activeOpacity={0.8} onPress={onPress}>
                 {/* 이미지 표시 */}
                 <Image source={getFullImageUrl(item.images)} style={styles.placeCardImage}/>
                 <View style={styles.placeDetails}>

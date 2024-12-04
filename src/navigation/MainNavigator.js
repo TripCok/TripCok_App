@@ -13,6 +13,7 @@ import PostDetailScreen from "../screens/Group/PostDetailScreen";
 import CommentListScreen from "../screens/Group/CommentListScreen";
 import CreatePost from "../screens/Group/CreatePostScreen";
 import GroupPlaceScreen from "../screens/Group/GroupPlaceScreen";
+import GroupPlaceListScreen from "../screens/Group/GroupPlaceListScreen";
 
 const Drawer = createDrawerNavigator();
 const GroupStack = createStackNavigator();
@@ -26,6 +27,8 @@ const GroupStackNavigator = () => {
             <GroupStack.Screen name="CommentList" component={CommentListScreen}/>
             <GroupStack.Screen name="CreatePost" component={CreatePost}/>
             <GroupStack.Screen name="GroupPlace" component={GroupPlaceScreen}/>
+            <GroupStack.Screen name="GroupPlaceList" component={GroupPlaceListScreen}/>
+
 
         </GroupStack.Navigator>
     );
