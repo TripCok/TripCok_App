@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HeaderComponent from '../components/HeaderComponent';
 import MainSlideComponent from '../components/home/MainSlideComponent';
@@ -51,10 +51,13 @@ const HomeScreen = ({navigation}) => {
                 <MainSlideComponent/>
                 <View style={styles.groupNavContainer}>
                     <TouchableOpacity style={styles.groupNavBox} onPress={() => navigation.navigate('GroupCreate')}>
-                        <Text style={styles.groupNavTex}>모임{'\n'}만들기</Text>
+                        <Text style={styles.groupNavTex}>모임</Text>
+                        <Text style={styles.groupNavTex}>만들기</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.groupNavBox} onPress={() => navigation.navigate("GroupStack", { screen: "GroupList" })}>
-                        <Text style={styles.groupNavTex}>모임{'\n'}찾기</Text>
+                    <TouchableOpacity style={styles.groupNavBox}
+                                      onPress={() => navigation.navigate("GroupStack", {screen: "GroupList"})}>
+                        <Text style={styles.groupNavTex}>모임</Text>
+                        <Text style={styles.groupNavTex}>찾기</Text>
                     </TouchableOpacity>
                 </View>
                 <BestPlaceComponent/>
@@ -71,9 +74,10 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
+        width: Dimensions.get('screen').width,
+        height: Dimensions.get('screen').height,
     },
     loadingContainer: {
-        flex: 1,
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
@@ -84,19 +88,6 @@ const styles = StyleSheet.create({
     contentContainer: {
         padding: 20,
 
-    }, bestPlaceBtn: {
-        marginTop: 20,
-        width: '100%',
-        height: 50,
-        padding: 5,
-        backgroundColor: '#6DB777',
-        borderRadius: 10,
-        justifyContent: 'center'
-    },
-    bestPlaceText: {
-        color: '#fff',
-        fontWeight: 500,
-        fontSize: 16,
     },
     groupNavContainer: {
         marginTop: 25,

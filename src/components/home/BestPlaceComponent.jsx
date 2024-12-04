@@ -7,11 +7,11 @@ class BestPlaceComponent extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <Text style={styles.bestPlaceTitle}>
-                    ✨ 요즘 가장 핫한 여행지! ✨{'\n'}
-                    여행자들의 선택으로 선정된 {'\n'}
-                    오늘의 인기 여행지를 확인하세요! 🏖️🏙️
-                </Text>
+                <View style={styles.bestPlaceTitleBox}>
+                    <Text style={styles.bestPlaceTitle}>✨ 요즘 가장 핫한 여행지! ✨</Text>
+                    <Text style={styles.bestPlaceTitle}>여행자들의 선택으로 선정된</Text>
+                    <Text style={styles.bestPlaceTitle}>오늘의 인기 여행지를 확인하세요! 🏖️🏙</Text>
+                </View>
 
                 <ScrollView
                     style={styles.scrollView}
@@ -46,11 +46,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    bestPlaceTitleBox: {
+        width: '100%',
+        marginBottom: 30
+    },
     bestPlaceTitle: {
         textAlign: 'center',
         fontSize: 15,
-        fontWeight: '500',
-        marginBottom: 25,
+        fontWeight: 500,
+        height: "fit-content",
     },
     scrollView: {
         width: '100%',
@@ -59,7 +63,6 @@ const styles = StyleSheet.create({
     placeCard: {
         width: width * 0.42, // 화면 너비의 70%
         height: 250,
-        // backgroundColor: '#6DB777',
         borderRadius: 10,
         marginRight: 10,
         justifyContent: 'center',

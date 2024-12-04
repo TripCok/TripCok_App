@@ -7,8 +7,12 @@ class MyStyleGroupComponent extends Component {
     render() {
         return (
             <View style={styles.myStyleGroupContainer}>
-                <Text style={styles.myStyleGroupTitle}>🌟 나와 비슷한 여행 스타일? 🌟{'\n'}혼자보다 함께!{'\n'}지금 당신과 잘 맞는 여행 메이트를 찾아보세요!
-                    👫⛺</Text>
+                <View style={styles.myStyleGroupTitleBox}>
+                    <Text style={styles.myStyleGroupTitle}>🌟 나와 비슷한 여행 스타일? 🌟</Text>
+                    <Text style={styles.myStyleGroupTitle}>혼자보다 함께!</Text>
+                    <Text style={styles.myStyleGroupTitle}>지금 당신과 잘 맞는 여행 메이트를 찾아보세요!👫⛺</Text>
+                </View>
+
 
                 <View style={styles.myStyleGroupCards}>
 
@@ -42,7 +46,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         textAlign: 'center',
         fontWeight: '500',
-        marginBottom: 25
     },
     myStyleGroupCards: {
         width: '100%',
@@ -90,9 +93,9 @@ const styles = StyleSheet.create({
     },
     groupListBtn: {
         width: '100%',
-        height:'50',
+        height: '50',
         paddingTop: 10,
-        paddingBottom:10,
+        paddingBottom: 10,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: '#6DB777',
@@ -108,5 +111,8 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '500',
         color: 'white',
+    },
+    myStyleGroupTitleBox: {
+        marginBottom:20
     }
 });

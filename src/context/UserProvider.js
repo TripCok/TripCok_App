@@ -1,18 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { UserContext } from "./UserContext";
+import React, {useState, useEffect, useCallback} from "react";
+import {UserContext} from "./UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ActivityIndicator, View, StyleSheet } from "react-native";
+import {ActivityIndicator, View, StyleSheet} from "react-native";
+import api from "../api/api";
 
-const UserProvider = ({ children }) => {
+const UserProvider = ({children}) => {
     const [userData, setUserData] = useState(null); // 사용자 데이터 상태
     const [hasOnboarded, setHasOnboarded] = useState(false); // 온보딩 여부 상태
     const [loading, setLoading] = useState(true); // 데이터 로딩 상태
 
+    const fetchAsyncLogin = useCallback(async (id, email) => {
+        const response = await api.put("/member/login/async", {
+            params: {
+                "id": id,
+                "email": email,
+            }
+        });
+
+        if (response.status === 200) {
+            return response;
+        }else{
+
+        }
+
+    })
     useEffect(() => {
         const loadUserData = async () => {
             try {
                 const storedData = await AsyncStorage.getItem("userData");
                 if (storedData) {
+
                     setUserData(JSON.parse(storedData));
                     setHasOnboarded(true);
                 } else {
@@ -64,7 +81,7 @@ const UserProvider = ({ children }) => {
         // 로딩 상태 처리 (스피너 표시)
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#6DB777" />
+                <ActivityIndicator size="large" color="#6DB777"/>
             </View>
         );
     }
