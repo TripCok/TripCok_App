@@ -1,48 +1,55 @@
-import React, {useState, useEffect, useCallback} from "react";
-import {UserContext} from "./UserContext";
+import React, { useState, useEffect } from "react";
+import { UserContext } from "./UserContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {ActivityIndicator, View, StyleSheet} from "react-native";
+import { ActivityIndicator, View, StyleSheet } from "react-native";
 import api from "../api/api";
 
-const UserProvider = ({children}) => {
+const UserProvider = ({ children }) => {
     const [userData, setUserData] = useState(null); // 사용자 데이터 상태
     const [hasOnboarded, setHasOnboarded] = useState(false); // 온보딩 여부 상태
     const [loading, setLoading] = useState(true); // 데이터 로딩 상태
 
-    const fetchAsyncLogin = useCallback(async (id, email) => {
-        const response = await api.put("/member/login/async", {
-            params: {
-                "id": id,
-                "email": email,
+    const fetchAsyncLogin = async ({ id, email }) => {
+        try {
+            const response = await api.put("/member/login/async", null, {
+                params: { id, email },
+            });
+            if (response.status === 200) {
+                return response.data; // 사용자 데이터 반환
+            } else {
+                throw new Error("Invalid credentials");
             }
-        });
-
-        if (response.status === 200) {
-            return response;
-        }else{
-
+        } catch (error) {
+            console.error("Error during async login:", error);
+            await clearUserData(); // 사용자 데이터 초기화
+            return false;
         }
+    };
 
-    })
-    useEffect(() => {
-        const loadUserData = async () => {
-            try {
-                const storedData = await AsyncStorage.getItem("userData");
-                if (storedData) {
-
-                    setUserData(JSON.parse(storedData));
+    const loadUserData = async () => {
+        try {
+            const storedData = await AsyncStorage.getItem("userData");
+            if (storedData) {
+                const userData = JSON.parse(storedData);
+                const response = await fetchAsyncLogin({ id: userData.id, email: userData.email });
+                if (response) {
+                    setUserData(response); // 서버 응답 데이터 사용
                     setHasOnboarded(true);
                 } else {
-                    setUserData(null);
-                    setHasOnboarded(false);
+                    await clearUserData(); // 데이터 초기화
                 }
-            } catch (error) {
-                console.error("Error loading user data:", error);
-            } finally {
-                setLoading(false); // 로딩 완료
+            } else {
+                setUserData(null);
+                setHasOnboarded(false);
             }
-        };
+        } catch (error) {
+            console.error("Error loading user data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         loadUserData();
     }, []);
 
@@ -53,6 +60,7 @@ const UserProvider = ({children}) => {
             }
             await AsyncStorage.setItem("userData", JSON.stringify(data));
             setUserData(data);
+            setHasOnboarded(true);
         } catch (error) {
             console.error("Error saving user data:", error);
         }
@@ -68,20 +76,10 @@ const UserProvider = ({children}) => {
         }
     };
 
-    useEffect(() => {
-        // userData 변경 시 AsyncStorage에 저장
-        if (userData) {
-            AsyncStorage.setItem("userData", JSON.stringify(userData)).catch((error) => {
-                console.error("Error syncing user data with AsyncStorage:", error);
-            });
-        }
-    }, [userData]);
-
     if (loading) {
-        // 로딩 상태 처리 (스피너 표시)
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#6DB777"/>
+                <ActivityIndicator size="large" color="#6DB777" />
             </View>
         );
     }

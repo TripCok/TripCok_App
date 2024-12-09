@@ -24,7 +24,7 @@ const CustomDrawer = ({navigation}) => {
                         try {
 
                             await AsyncStorage.clear();
-                            setUserData(null);
+                            // setUserData(null);
                             setHasOnboarded(false);
 
 

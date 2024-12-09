@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 // const sv_api = "192.168.0.18";
-const sv_api = "192.168.0.27";
+const sv_api = "127.0.0.1";
+// const sv_api = "192.168.0.27";
 
 // Axios 인스턴스 생성
 const api = axios.create({

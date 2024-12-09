@@ -16,16 +16,23 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "사진을 업로드하기 위해 사진 라이브러리에 접근합니다."
-      }
+      },
+      "bundleIdentifier": "com.jeonghoon2.tripcokapp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jeong_hoon2.tripcokapp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e4269296-5b96-4c2e-9288-8cd95d520f2b"
+      }
     }
   }
 }

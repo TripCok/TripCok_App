@@ -64,7 +64,6 @@ const HomeScreen = ({navigation}) => {
                 <MyStyleGroupComponent/>
             </ScrollView>
         </View>
-
     );
 };
 

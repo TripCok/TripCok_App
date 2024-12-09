@@ -52,8 +52,10 @@ const OnboardingLogin = ({navigation}) => {
                 Alert.alert("로그인 실패", "서버에서 유효한 데이터를 반환하지 않았습니다.");
             }
         } catch (error) {
-            Alert.alert("로그인 실패", "이메일 또는 비밀번호가 올바르지 않습니다.");
-            console.error("Login error:", error);
+            if (error.status === 404) {
+                Alert.alert("로그인 실패", "이메일 또는 비밀번호가 올바르지 않습니다.");
+                console.log("로그인 실패")
+            }
         } finally {
             setLoading(false);
         }
