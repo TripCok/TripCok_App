@@ -1,9 +1,8 @@
-import React, {useContext, useEffect, useRef} from "react";
-import {Image, StyleSheet, Text, TouchableOpacity, View, Platform} from "react-native";
+import React, {useContext, useRef} from "react";
+import {Image, Platform, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import ProfileModalComponent from "../components/profile/ProfileModalComponent";
 import {UserContext} from "../context/UserContext";
-import api from "../api/api";
 
 export const HeaderComponent = ({navigation}) => {
     const modalizeRef = useRef(null);
@@ -13,10 +12,6 @@ export const HeaderComponent = ({navigation}) => {
         modalizeRef.current?.open();
     };
 
-    const getFullImageUrl = (filePath) => {
-        const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-        return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
-    };
 
     return (
         <>
@@ -24,7 +19,7 @@ export const HeaderComponent = ({navigation}) => {
                 <TouchableOpacity style={styles.navLeftMenu} onPress={openProfileModal}>
                     <View style={styles.navLeft}>
                         <Image
-                            source={userData?.profileImage ? {uri: getFullImageUrl(userData.profileImage)} : require("../assets/images/b-p-1.png")}
+                            source={userData?.profileImage ? {uri: userData.profileImage} : require("../assets/images/b-p-1.png")}
                             style={styles.navLeftIcon}
                         />
 

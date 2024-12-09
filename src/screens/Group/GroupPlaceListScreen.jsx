@@ -68,7 +68,7 @@ const GroupPlaceListScreen = ({route, navigation}) => {
                 <View style={{flexDirection: "row", alignItems: "center", gap: 10}}>
                     <Icon name="menu-sharp" size={20} color="black"/>
                     <View style={styles.thumbnailContainer}>
-                        <Image source={getFullImageUrl(item)} style={styles.placeThumbnail}/>
+                        <Image source={{uri: item.placeThumbnail}} style={styles.placeThumbnail}/>
                         <Text style={{fontSize: 15}}>{item.placeName}</Text>
                     </View>
                 </View>
@@ -77,17 +77,6 @@ const GroupPlaceListScreen = ({route, navigation}) => {
         ),
         []
     );
-
-    const getFullImageUrl = (item) => {
-        if (item.placeThumbnail) {
-            const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-            return {
-                uri: `${baseURL}/file?filePath=${encodeURIComponent(item.placeThumbnail)}`,
-            };
-        } else {
-            return require("../../assets/images/p-l-1.png");
-        }
-    };
 
     return (
         <View style={styles.container}>
@@ -142,7 +131,7 @@ const styles = StyleSheet.create({
         borderRadius: 5,
     },
     draggableList: {
-        marginTop:20,
+        marginTop: 20,
         height: "100%",
     },
 });

@@ -32,14 +32,14 @@ const PlaceScreen = ({route, navigation}) => {
             // Thumbnail 이미지 처리
             const thumbnailItem = data.images?.find(item => item.imageType === 'T');
             if (thumbnailItem?.imagePath) {
-                setThumbnail(getFullImageUrl(thumbnailItem.imagePath));
+                setThumbnail(thumbnailItem.imagePath);
             } else {
                 setThumbnail(null);
             }
 
             // Common 이미지 처리
             const commonImgItems = data.images?.filter(item => item.imageType === 'C') || [];
-            const commonImgUrls = commonImgItems.map(item => getFullImageUrl(item.imagePath));
+            const commonImgUrls = commonImgItems.map(item => item.imagePath);
             setCommonImg(commonImgUrls);
 
         } catch (err) {
@@ -47,11 +47,6 @@ const PlaceScreen = ({route, navigation}) => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const getFullImageUrl = (filePath) => {
-        const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-        return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
     };
 
     if (loading) {
@@ -156,7 +151,7 @@ const styles = StyleSheet.create({
     thumbnailImage: {
         minHeight: 300,
         minWidth: '100%',
-        objectFit: 'cover',
+        objectFit: 'fill',
     },
     placeholder:{
         minHeight:300,
@@ -213,7 +208,7 @@ const styles = StyleSheet.create({
     commonImg: {
         width: 200,
         height: '100%',
-        objectFit: 'cover',
+        objectFit: 'fill',
         borderRadius: 10
     }
 

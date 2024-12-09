@@ -32,11 +32,6 @@ const PostDetailScreen = ({navigation, route}) => {
         }
     };
 
-    const getFullImageUrl = (filePath) => {
-        const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-        return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
-    };
-
     const onSubmitComment = async () => {
         if (!comment) {
             alert('댓글을 입력하세요.')
@@ -104,7 +99,7 @@ const PostDetailScreen = ({navigation, route}) => {
                         < Image style={styles.profileImage}
                                 source={
                                     post.writerProfile?.profileImage
-                                        ? {uri: getFullImageUrl(post.writerProfile.profileImage)}
+                                        ? {uri: post.writerProfile.profileImage}
                                         : require("../../assets/images/b-p-1.png")
                                 }
                         />

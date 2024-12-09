@@ -15,7 +15,7 @@ const GroupCardsComponent = ({navigation, data, loading, refreshing, onRefresh, 
             ListFooterComponent={
                 loading ? (
                     <View style={styles.loaderContainer}>
-                        <ActivityIndicator size="large" color="#0000ff"/>
+                        <ActivityIndicator size="large" color="#6DB777"/>
                     </View>
                 ) : (
                     <View style={styles.noMoreData}>

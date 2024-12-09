@@ -40,8 +40,9 @@ const PlaceCards = ({navigation}) => {
             const formattedData = data.map((item) => ({
                 id: item.id.toString(),
                 title: item.name,
-                image: item.images[0] ? getFullImageUrl(item.images[0].imagePath) : null,
+                image: item.images[0].imagePath,
             }));
+
 
             setPlaces(formattedData);
         } catch (error) {
@@ -50,11 +51,6 @@ const PlaceCards = ({navigation}) => {
         } finally {
             setLoading(false);
         }
-    };
-
-    const getFullImageUrl = (filePath) => {
-        const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-        return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
     };
 
     const onRefresh = async () => {
@@ -82,7 +78,7 @@ const PlaceCards = ({navigation}) => {
         </TouchableOpacity>
     );
 
-    if (loading && !refreshing) { // 로딩 상태를 구분
+    if (loading && !refreshing) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#6DB777"/>

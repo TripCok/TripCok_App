@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { View, StyleSheet } from "react-native";
+import React, {useCallback, useEffect, useState} from "react";
+import {StyleSheet, View} from "react-native";
 import HeaderComponent from "../../components/HeaderComponent";
 import GroupNavigationComponent from "../../components/group/GroupNavigationComponent";
 import GroupCardsComponent from "../../components/group/GroupCardsComponent";
 import api from "../../api/api";
 
-const GroupListScreen = ({ navigation }) => {
+const GroupListScreen = ({navigation}) => {
     const [groupData, setGroupData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
@@ -81,7 +81,7 @@ const GroupListScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            <HeaderComponent navigation={navigation} />
+            <HeaderComponent navigation={navigation}/>
             <GroupNavigationComponent
                 categories={categories}
                 setCategories={setCategories}

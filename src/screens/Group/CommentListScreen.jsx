@@ -37,11 +37,6 @@ const CommentListScreen = ({navigation, route}) => {
             }
         };
 
-        const getFullImageUrl = (filePath) => {
-            const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-            return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
-        };
-
         const formatDate = (isoString) => {
             if (!isoString) return "날짜 없음";
             try {
@@ -109,7 +104,7 @@ const CommentListScreen = ({navigation, route}) => {
                                 < Image style={styles.profileImage}
                                         source={
                                             comment.writerProfile?.profileImage
-                                                ? {uri: getFullImageUrl(post.writerProfile.profileImage)}
+                                                ? {uri: post.writerProfile.profileImage}
                                                 : require("../../assets/images/b-p-1.png")
                                         }
                                 />

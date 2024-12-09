@@ -22,6 +22,7 @@ const GroupPlaceSearch = ({isVisible, text, groupId, groupOwnerId}) => {
                 },
             });
             if (response.status === 200) {
+                console.log(response.data.content);
                 setSearchResult(response.data.content || []); // 검색 결과 배열로 설정
             } else {
                 setSearchResult([]); // 데이터가 없을 경우 빈 배열
@@ -74,17 +75,6 @@ const GroupPlaceSearch = ({isVisible, text, groupId, groupOwnerId}) => {
         return places.some((place) => place.placeId === placeId); // 그룹에 Place가 있는지 확인
     };
 
-    const getFullImageUrl = (item) => {
-        if (item.placeThumbnail) {
-            const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-            return {
-                uri: `${baseURL}/file?filePath=${encodeURIComponent(item.placeThumbnail)}`,
-            };
-        } else {
-            return require("../../../assets/images/p-l-1.png"); // 기본 이미지
-        }
-    };
-
     // text가 변경될 때만 API 호출
     useEffect(() => {
         fetchResults();
@@ -97,7 +87,7 @@ const GroupPlaceSearch = ({isVisible, text, groupId, groupOwnerId}) => {
             {searchResult.map((place, index) => (
                 <View key={index} style={styles.card}>
                     <View style={styles.imageContainer}>
-                        <Image source={getFullImageUrl(place)} style={styles.image}/>
+                        <Image source={{uri : place.placeThumbnail}} style={styles.image}/>
                     </View>
                     <View style={styles.textContainer}>
                         <Text style={styles.placeName}>{place.name}</Text>

@@ -131,11 +131,6 @@ const ProfileModalComponent = forwardRef((props, ref) => {
         }
     };
 
-    const getFullImageUrl = (filePath) => {
-        const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-        return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
-    };
-
     const renderProfileImages = ({item}) => (
         <TouchableOpacity onPress={() => selectBaseProfileImage(item)}>
             <Image source={item} style={styles.baseProfileImage}/>
@@ -152,7 +147,7 @@ const ProfileModalComponent = forwardRef((props, ref) => {
                             <Image
                                 source={
                                     typeof profileImage === "string"
-                                        ? {uri: getFullImageUrl(profileImage)}
+                                        ? {uri: profileImage}
                                         : profileImage
                                 }
                                 style={styles.profileImage}

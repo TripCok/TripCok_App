@@ -1,12 +1,7 @@
 import React from 'react';
-import {View, StyleSheet, TouchableOpacity, Text, Image} from "react-native";
-import api from "../../../api/api";
+import {Image, StyleSheet, Text, View} from "react-native";
 
 const GroupMembersComponent = ({item}) => {
-    const getFullImageUrl = (filePath) => {
-        const baseURL = api.defaults?.baseURL || "http://localhost:8080";
-        return `${baseURL}/file?filePath=${encodeURIComponent(filePath)}`;
-    };
 
 
     return (
@@ -19,7 +14,7 @@ const GroupMembersComponent = ({item}) => {
                             style={styles.profileImage}
                             source={
                                 member.profileImage
-                                    ? {uri: getFullImageUrl(member.profileImage)}
+                                    ? {uri: member.profileImage}
                                     : require("../../../assets/images/b-p-1.png")
                             }
                         />
