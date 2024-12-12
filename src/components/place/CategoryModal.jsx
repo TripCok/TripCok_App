@@ -126,7 +126,8 @@ const CategoryModal = ({visible, setVisible, fetchCategories, selectedCategories
                                                     selectedSubCategories.includes(item.id) && styles.categoryItemTextCheck,
                                                 ]}
                                             >
-                                                {item.name} {item.depth !== undefined ? `(Level ${item.depth})` : ''}
+                                                {/*{item.name} {item.depth !== undefined ? `(Level ${item.depth})` : ''}*/}
+                                                {item.name}
                                             </Text>
                                         </TouchableOpacity>
                                     )}

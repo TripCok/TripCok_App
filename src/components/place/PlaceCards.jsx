@@ -14,37 +14,49 @@ import api from "../../api/api";
 
 const PlaceCards = ({navigation}) => {
     const [places, setPlaces] = useState([]);
+    const [page, setPage] = useState(0); // 페이지 번호 상태 추가
+    const [hasMore, setHasMore] = useState(true); // 데이터 로드 가능 여부
     const [loading, setLoading] = useState(true);
-    const [refreshing, setRefreshing] = useState(false); // 새로 고침 상태 추가
+    const [refreshing, setRefreshing] = useState(false);
     const [error, setError] = useState(null);
     const {selectedCategories} = useContext(CategoryContext);
 
     useEffect(() => {
-        fetchPlaces();
+        const fetchData = async () => {
+            setPage(0); // 카테고리 변경 시 페이지 초기화
+            setPlaces([]); // 기존 데이터 초기화
+            await fetchPlaces(0); // 첫 페이지 데이터 로드
+        };
+        fetchData();
     }, [selectedCategories]);
 
-    const fetchPlaces = async () => {
+    const fetchPlaces = async (pageToLoad) => {
         try {
+            if (!hasMore && pageToLoad > 0) return; // 더 이상 데이터가 없으면 요청 중단
             setLoading(true);
             const categoryIds = selectedCategories.map((cat) => cat.id).join(',');
             const response = await api.get(`/place`, {
                 params: {
-                    page: 0,
+                    page: pageToLoad,
                     size: 10,
                     categoryIds: categoryIds,
                     name: ''
                 }
             });
-            const data = response.data.content;
 
-            const formattedData = data.map((item) => ({
-                id: item.id.toString(),
-                title: item.name,
-                image: item.images[0].imagePath,
-            }));
+            if (response.status === 200) {
+                const data = response.data.content;
 
+                const formattedData = data.map((item) => ({
+                    id: item.id.toString(),
+                    title: item.name,
+                    image: item.placeThumbnail,
+                }));
 
-            setPlaces(formattedData);
+                setPlaces((prevPlaces) => [...prevPlaces, ...formattedData]); // 기존 데이터와 병합
+                setHasMore(data.length > 0); // 더 이상 데이터가 없으면 false
+                setPage(pageToLoad + 1); // 다음 페이지 번호 증가
+            }
         } catch (error) {
             console.error("Failed to fetch places:", error);
             setError("데이터를 가져오는 데 실패했습니다.");
@@ -55,7 +67,10 @@ const PlaceCards = ({navigation}) => {
 
     const onRefresh = async () => {
         setRefreshing(true);
-        await fetchPlaces();
+        setPage(0);
+        setHasMore(true);
+        setPlaces([]);
+        await fetchPlaces(0);
         setRefreshing(false);
     };
 
@@ -72,13 +87,15 @@ const PlaceCards = ({navigation}) => {
                 </ImageBackground>
             ) : (
                 <View style={[styles.image, styles.placeholder]}>
-                    <Text style={styles.placeholderText}>이미지 없음</Text>
+                    <View style={styles.overlay}>
+                        <Text style={[styles.title,{color: '#6DB777'}]}>{item.title}</Text>
+                    </View>
                 </View>
             )}
         </TouchableOpacity>
     );
 
-    if (loading && !refreshing) {
+    if (loading && !refreshing && places.length === 0) {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#6DB777"/>
@@ -86,11 +103,11 @@ const PlaceCards = ({navigation}) => {
         );
     }
 
-    if (error) {
+    if (error && places.length === 0) {
         return (
             <View style={styles.loadingContainer}>
                 <Text style={styles.errorText}>{error}</Text>
-                <TouchableOpacity onPress={fetchPlaces} style={styles.retryButton}>
+                <TouchableOpacity onPress={() => fetchPlaces(0)} style={styles.retryButton}>
                     <Text style={styles.retryText}>다시 시도</Text>
                 </TouchableOpacity>
             </View>
@@ -101,15 +118,24 @@ const PlaceCards = ({navigation}) => {
         <FlatList
             data={places}
             renderItem={({item}) => <CardItem item={item}/>}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item, index) => `${item.id}-${index}`}
             numColumns={2}
             contentContainerStyle={styles.placeCardsContainer}
             refreshControl={
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                    colors={["#6DB777"]} // 새로 고침 색상
+                    colors={["#6DB777"]}
                 />
+            }
+            onEndReached={() => fetchPlaces(page)} // 스크롤 끝에 도달 시 호출
+            onEndReachedThreshold={0.5} // 트리거 임계값 설정 (0.5는 스크롤이 50% 남았을 때 호출)
+            ListFooterComponent={
+                loading && hasMore ? (
+                    <View style={styles.loadingContainer}>
+                        <ActivityIndicator size="small" color="#6DB777"/>
+                    </View>
+                ) : null
             }
         />
     );
@@ -158,11 +184,11 @@ const styles = StyleSheet.create({
         flex: 1,
         lineHeight: 20,
     },
-    placeholder: {
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#e0e0e0",
-    },
+    // placeholder: {
+    //     justifyContent: "center",
+    //     alignItems: "center",
+    //     backgroundColor: "#e0e0e0",
+    // },
     placeholderText: {
         color: "#999",
         fontSize: 14,
