@@ -17,6 +17,7 @@ import GroupPlaceListScreen from "../screens/Group/GroupPlaceListScreen";
 
 const Drawer = createDrawerNavigator();
 const GroupStack = createStackNavigator();
+const PlaceStack = createStackNavigator();
 
 const GroupStackNavigator = () => {
     return (
@@ -28,11 +29,18 @@ const GroupStackNavigator = () => {
             <GroupStack.Screen name="CreatePost" component={CreatePost}/>
             <GroupStack.Screen name="GroupPlace" component={GroupPlaceScreen}/>
             <GroupStack.Screen name="GroupPlaceList" component={GroupPlaceListScreen}/>
-
-
         </GroupStack.Navigator>
     );
 };
+
+const PlaceStackNavigator = () => {
+    return (
+        <PlaceStack.Navigator screenOptions={{headerShown: false, drawerPosition: "left"}}>
+            <PlaceStack.Screen name="PlaceList" component={PlaceListScreen}/>
+            <PlaceStack.Screen name="Place" component={PlaceScreen}/>
+        </PlaceStack.Navigator>
+    )
+}
 
 // MainNavigator 정의
 const MainNavigator = () => {
@@ -42,8 +50,7 @@ const MainNavigator = () => {
             screenOptions={{headerShown: false, drawerPosition: "left"}}
             drawerContent={(props) => <CustomDrawer {...props} />}>
             <Drawer.Screen name="Home" component={HomeScreen}/>
-            <Drawer.Screen name="PlaceList" component={PlaceListScreen}/>
-            <Drawer.Screen name="Place" component={PlaceScreen}/>
+            <Drawer.Screen name="PlaceStack" component={PlaceStackNavigator}/>
             <Drawer.Screen name="GroupStack" component={GroupStackNavigator}/>
             <Drawer.Screen name="GroupCreate" component={CreateGroupScreen}/>
             <Drawer.Screen name="MyGroup" component={MyGroupsScreen}/>

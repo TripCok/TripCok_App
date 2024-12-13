@@ -77,7 +77,7 @@ const PlaceCards = ({navigation}) => {
     const CardItem = ({item}) => (
         <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('Place', {id: item.id})}
+            onPress={() => navigation.navigate("PlaceStack", {screen: "Place", params: {id: item.id}})}
         >
             {item.image ? (
                 <ImageBackground source={{uri: item.image}} style={styles.image} imageStyle={styles.imageStyle}>
@@ -88,7 +88,7 @@ const PlaceCards = ({navigation}) => {
             ) : (
                 <View style={[styles.image, styles.placeholder]}>
                     <View style={styles.overlay}>
-                        <Text style={[styles.title,{color: '#6DB777'}]}>{item.title}</Text>
+                        <Text style={[styles.title, {color: '#6DB777'}]}>{item.title}</Text>
                     </View>
                 </View>
             )}

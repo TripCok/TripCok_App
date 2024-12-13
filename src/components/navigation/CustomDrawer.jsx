@@ -68,7 +68,7 @@ const CustomDrawer = ({navigation}) => {
                 <Text style={styles.menuItemTitle}>여행</Text>
                 <TouchableOpacity
                     style={styles.menuItem}
-                    onPress={() => navigation.navigate("PlaceList")}
+                    onPress={() => navigation.navigate("PlaceStack", { screen: "PlaceList" })}
                 >
                     <Text style={styles.menuText}>여행지 찾기</Text>
                 </TouchableOpacity>
