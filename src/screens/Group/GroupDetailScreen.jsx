@@ -43,7 +43,7 @@ const GroupDetailScreen = ({route, navigation}) => {
 
     // 모임 가입 처리
     const handleJoinGroup = async () => {
-        setLoading(true);
+        // setLoading(true);
         try {
             const response = await api.post("/application", {
                 memberId: userData.id,
@@ -51,7 +51,7 @@ const GroupDetailScreen = ({route, navigation}) => {
             });
             if (response.status === 201) {
                 alert("모임 신청이 완료되었습니다.");
-                setIsJoin(true);
+                // setIsJoin(true);
             }
         } catch (error) {
             if (error.response?.status === 409) {

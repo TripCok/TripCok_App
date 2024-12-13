@@ -1,11 +1,11 @@
 import React, {useContext, useState} from 'react';
-import {StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
+import {StyleSheet, Text, TextInput, TouchableOpacity, View, Keyboard,TouchableWithoutFeedback} from "react-native";
 import {UserContext} from "../../context/UserContext";
 import api from "../../api/api";
 import Icon from "react-native-vector-icons/Ionicons";
 
-const CreatePost = ({navigation, route}) => {
-    const {userData} = useContext(UserContext);
+const CreatePost = ({ navigation, route }) => {
+    const { userData } = useContext(UserContext);
     const groupId = route.params.groupId;
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
@@ -43,60 +43,63 @@ const CreatePost = ({navigation, route}) => {
         }
     };
 
+    const dismissKeyboard = () => {
+        Keyboard.dismiss();
+    };
+
     return (
-        <View style={styles.container}>
-            <View>
-                <View style={styles.createPostHeader}>
-                    <TouchableOpacity onPress={() => navigation.navigate("GroupList")}>
-                        <Icon name="chevron-back" size={28}/>
-                    </TouchableOpacity>
-                    <Text style={{fontSize: 24, fontWeight: 'bold'}}>게시물 작성</Text>
+        <TouchableWithoutFeedback onPress={dismissKeyboard}>
+            <View style={styles.container}>
+                <View>
+                    <View style={styles.createPostHeader}>
+                        <TouchableOpacity onPress={() => navigation.navigate("GroupList")}>
+                            <Icon name="chevron-back" size={28} />
+                        </TouchableOpacity>
+                        <Text style={{ fontSize: 24, fontWeight: 'bold' }}>게시물 작성</Text>
+                    </View>
+
+                    <Text style={{ marginTop: 20, fontSize: 20, fontWeight: '500', color: "#6DB777" }}>제목</Text>
+                    <TextInput
+                        style={styles.postTitleInput}
+                        placeholderTextColor="#DADADA"
+                        placeholder="제목"
+                        value={title}
+                        onChangeText={setTitle}
+                    />
+
+                    <Text style={{ marginTop: 20, fontSize: 20, fontWeight: '500', color: "#6DB777" }}>내용</Text>
+                    <TextInput
+                        placeholderTextColor="#DADADA"
+                        placeholder="모임 설명"
+                        style={styles.postContentInput}
+                        multiline={true}
+                        textAlignVertical="top"
+                        value={content}
+                        onChangeText={setContent}
+                    />
                 </View>
 
-                <Text style={{marginTop: 20, fontSize: 20, fontWeight: 500, color: "#6DB777"}}>제목</Text>
-                <TextInput
-                    style={styles.postTitleInput}
-                    placeholderTextColor="#DADADA"
-                    placeholder="제목"
-                    value={title}
-                    onChangeText={setTitle}
-                ></TextInput>
-
-                <Text style={{marginTop: 20, fontSize: 20, fontWeight: 500, color: "#6DB777"}}>내용</Text>
-                <TextInput
-                    placeholderTextColor="#DADADA"
-                    placeholder="모임 설명"
-                    style={styles.postContentInput}
-                    multiline={true}
-                    textAlignVertical="top"
-                    value={content}
-                    onChangeText={setContent}
-                    keyboardType={"default"}
-                />
-
+                <View style={{
+                    width: '100%',
+                    position: 'absolute',
+                    flexDirection: 'row',
+                    bottom: 40,
+                    justifyContent: 'center',
+                    marginHorizontal: 20
+                }}>
+                    <TouchableOpacity style={{
+                        width: "75%",
+                        backgroundColor: "#6DB777",
+                        height: 40,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 10,
+                    }} onPress={createPost}>
+                        <Text style={{color: 'white', fontSize: 18, fontWeight: 500}}>작성</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
-            <View style={{
-                width: '100%',
-                position: 'absolute',
-                flexDirection: 'row',
-                bottom: 40,
-                justifyContent: 'center',
-                marginHorizontal: 20
-            }}>
-                <TouchableOpacity style={{
-                    width: "75%",
-                    backgroundColor: "#6DB777",
-                    height: 40,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    borderRadius: 10,
-                }} onPress={createPost}>
-                    <Text style={{color: 'white', fontSize: 18, fontWeight: 500}}>작성</Text>
-                </TouchableOpacity>
-            </View>
-
-        </View>
-
+        </TouchableWithoutFeedback>
     );
 };
 
