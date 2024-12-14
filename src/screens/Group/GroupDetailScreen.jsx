@@ -51,7 +51,6 @@ const GroupDetailScreen = ({route, navigation}) => {
             });
             if (response.status === 201) {
                 alert("모임 신청이 완료되었습니다.");
-                // setIsJoin(true);
             }
         } catch (error) {
             if (error.response?.status === 409) {
@@ -97,25 +96,35 @@ const GroupDetailScreen = ({route, navigation}) => {
                             style={[
                                 styles.groupDetailNavBtn,
                                 activeTab === tab && styles.activeTab,
+                                (!isJoin && tab !== "home") && styles.disabledTab, // 가입되지 않은 경우 홈 탭 외 비활성화 스타일
                             ]}
-                            onPress={() =>
-                                tab === "travel"
-                                    ? navigation.navigate("GroupStack", {
-                                        screen: "GroupPlace",
-                                        params: {
-                                            groupId: item.id,
-                                            groupOwnerId: item.groupOwnerId,
-                                        },
-                                    })
-                                    : setActiveTab(tab)
-                            }
+                            onPress={() => {
+                                if (isJoin || tab === "home") {
+                                    tab === "travel"
+                                        ? navigation.navigate("GroupStack", {
+                                            screen: "GroupPlace",
+                                            params: {
+                                                groupId: item.id,
+                                                groupOwnerId: item.groupOwnerId,
+                                            },
+                                        })
+                                        : setActiveTab(tab);
+                                }
+                            }}
+                            disabled={!isJoin && tab !== "home"} // 홈 탭 외 비활성화
                         >
-                            <Text style={styles.groupDetailNavTitle}>
+                            <Text
+                                style={[
+                                    styles.groupDetailNavTitle,
+                                    (!isJoin && tab !== "home") && styles.disabledTabText, // 텍스트 스타일 비활성화
+                                ]}
+                            >
                                 {tab === "home" ? "홈" : tab === "board" ? "게시판" : "여행지"}
                             </Text>
                         </TouchableOpacity>
                     ))}
                 </View>
+
 
                 {/* 활성화된 탭에 따른 콘텐츠 */}
                 {activeTab === "home" ? (
@@ -267,5 +276,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 99,
+    },
+    disabledTabText: {
+        color: "#d2d2d2", // 비활성화 텍스트 색상
     },
 });

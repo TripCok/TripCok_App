@@ -13,7 +13,6 @@ const GroupPlaceScreen = ({route, navigation}) => {
     const mapRef = useRef(null);
     const flatListRef = useRef(null);
 
-
     // 그룹 장소 데이터 로드
     useEffect(() => {
         if (groupId) {

@@ -1,15 +1,17 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {StyleSheet, TextInput, TouchableOpacity, View, Text, Dimensions, ScrollView} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import IconM from "react-native-vector-icons/MaterialCommunityIcons";
 import GroupPlaceOrderModal from "./GroupPlaceOrderModal";
 import GroupPlaceSearch from "./GroupPlaceSearch";
+import {UserContext} from "../../../context/UserContext";
 
 const GroupPlaceHeader = ({navigation, groupOwnerId, groupId}) => {
 
     const [isOrderModalVisible, setOrderModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
     const [isSearchResultVisible, setSearchResultVisible] = useState(false);
+    const {userData} = useContext(UserContext);
 
     const toggleOrderModal = () => {
         setOrderModalVisible(!isOrderModalVisible);
@@ -63,7 +65,7 @@ const GroupPlaceHeader = ({navigation, groupOwnerId, groupId}) => {
                               groupOwnerId={groupOwnerId}/>
 
 
-            {groupOwnerId && (
+            {groupOwnerId == userData.id && (
                 <ScrollView horizontal style={styles.adminGroupPlaceNav}>
                     <TouchableOpacity style={styles.adminGroupPlaceBox}>
                         <IconM name="crown" size={22} color="white"></IconM>
