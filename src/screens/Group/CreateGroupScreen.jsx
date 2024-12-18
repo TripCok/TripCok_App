@@ -239,7 +239,6 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     groupCategoryBox: {
-
         paddingHorizontal: 10,
         paddingVertical: 5,
         borderRadius: 10,

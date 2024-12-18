@@ -6,7 +6,7 @@ import GroupPlaceOrderModal from "./GroupPlaceOrderModal";
 import GroupPlaceSearch from "./GroupPlaceSearch";
 import {UserContext} from "../../../context/UserContext";
 
-const GroupPlaceHeader = ({navigation, groupOwnerId, groupId}) => {
+const GroupPlaceHeader = ({navigation, groupOwnerId, groupId, funcGCL, funcHRC}) => {
 
     const [isOrderModalVisible, setOrderModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
@@ -65,17 +65,23 @@ const GroupPlaceHeader = ({navigation, groupOwnerId, groupId}) => {
                               groupOwnerId={groupOwnerId}/>
 
 
-            {groupOwnerId == userData.id && (
-                <ScrollView horizontal style={styles.adminGroupPlaceNav}>
+            <ScrollView horizontal style={styles.adminGroupPlaceNav}>
+                <TouchableOpacity style={styles.adminGroupPlaceBox} onPress={() => funcGCL()}>
+                    <Icon name="navigate-outline" size={18} color="white"></Icon>
+                    <Text style={{color: 'white'}}> 내 위치 </Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.adminGroupPlaceBox} onPress={() => funcHRC()}>
+                    <Icon name="locate" size={18} color="white"></Icon>
+                    <Text style={{color: 'white'}}> 현 위치에서 장소 찾기 </Text>
+                </TouchableOpacity>
+                {groupOwnerId == userData.id && (
                     <TouchableOpacity style={styles.adminGroupPlaceBox}>
-                        <IconM name="crown" size={22} color="white"></IconM>
+                        <Icon name="golf-outline" size={16} color="white"></Icon>
+                        <Text style={{color: 'white'}}> 장소 추천 </Text>
                     </TouchableOpacity>
+                )}
+            < /ScrollView>
 
-                    <TouchableOpacity style={styles.adminGroupPlaceBox}>
-                        <Text style={{color: 'white', fontWeight: 500}}>장소 추천</Text>
-                    </TouchableOpacity>
-                </ScrollView>)
-            }
             {/* 순서 조절 모달 */}
             <GroupPlaceOrderModal isVisible={isOrderModalVisible} toggleModal={toggleOrderModal}/>
 
@@ -89,64 +95,104 @@ const styles = StyleSheet.create({
     // 헤더 컨테이너
     mapsHeaderContainer: {
         position: "absolute",
-        width: Dimensions.get("screen").width,
-        paddingTop: 60,
-        paddingHorizontal: 20,
-        zIndex: 50,
+        width:
+        Dimensions.get("screen").width,
+        paddingTop:
+            60,
+        paddingHorizontal:
+            20,
+        zIndex:
+            50,
 
-    },
+    }
+    ,
     firstSection: {
         flexDirection: "row",
-        justifyContent: "space-between"
-    },
+        justifyContent:
+            "space-between"
+    }
+    ,
     // 뒤로가기 및 지도 버튼
     backButtonContainer: {
         backgroundColor: "white",
-        width: 40,
-        height: 40,
-        borderRadius: 99,
-        justifyContent: "center",
-        alignItems: "center",
-    },
+        width:
+            40,
+        height:
+            40,
+        borderRadius:
+            99,
+        justifyContent:
+            "center",
+        alignItems:
+            "center",
+    }
+    ,
     mapButton: {
         backgroundColor: "#6DB777",
-        width: 40,
-        height: 40,
-        borderRadius: 99,
-        justifyContent: "center",
-        alignItems: "center",
-    },
+        width:
+            40,
+        height:
+            40,
+        borderRadius:
+            99,
+        justifyContent:
+            "center",
+        alignItems:
+            "center",
+    }
+    ,
     // 검색박스 컨테이너
     searchBoxContainer: {
         width: "70%",
-        justifyContent: "center",
-        position: "relative",
-    },
+        justifyContent:
+            "center",
+        position:
+            "relative",
+    }
+    ,
     searchBox: {
         height: 40,
-        backgroundColor: "white",
-        borderRadius: 99,
-        paddingHorizontal: 20,
-    },
+        backgroundColor:
+            "white",
+        borderRadius:
+            99,
+        paddingHorizontal:
+            20,
+    }
+    ,
     searchIcon: {
         position: "absolute",
-        zIndex: 1,
-        right: 10,
-    }, adminGroupPlaceNav: {
+        zIndex:
+            1,
+        right:
+            10,
+    }
+    ,
+    adminGroupPlaceNav: {
         marginTop: 10,
-        width: '100%',
-        display: "flex",
-    },
+        width:
+            '100%',
+        display:
+            "flex",
+    }
+    ,
     adminGroupPlaceBox: {
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        borderRadius: 99,
-        backgroundColor: "#6DB777",
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-        marginRight: 10,
+        padding: 5,
+
+        borderRadius:
+            99,
+        backgroundColor:
+            "#6DB777",
+        display:
+            "flex",
+        flexDirection:
+            "row",
+        justifyContent:
+            "center",
+        alignItems:
+            "center",
+        marginRight:
+            10,
     }
 
 

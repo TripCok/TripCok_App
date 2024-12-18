@@ -1,45 +1,34 @@
-import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View, Dimensions} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, {useContext, useLayoutEffect, useRef} from 'react';
+import {ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import HeaderComponent from '../components/HeaderComponent';
 import MainSlideComponent from '../components/home/MainSlideComponent';
 import BestPlaceComponent from "../components/home/BestPlaceComponent";
 import MyStyleGroupComponent from "../components/home/MyStyleGroupComponent";
+import PreferCategoryModal from "../components/home/PreferCategoryModal";
+import {UserContext} from '../context/UserContext';
+
 
 const HomeScreen = ({navigation}) => {
-    const [userData, setUserData] = useState(null);
-    const [loading, setLoading] = useState(true);
+    const {userData, setUserData} = useContext(UserContext);
+    const isOpenModalRef = useRef(null);
 
-    const loadUserData = async () => {
-        try {
-            const storedData = await AsyncStorage.getItem('userData');
-            if (storedData) {
-                const parsedData = JSON.parse(storedData);
-                setUserData(parsedData);
+    useLayoutEffect(() => {
+        if (String(userData?.isPreferCategory) === "NOT_YET") {
+            if (isOpenModalRef.current) {
+                isOpenModalRef.current.open();
             }
-        } catch (error) {
-            console.error('데이터 로드 실패:', error);
-        } finally {
-            setLoading(false);
+        } else if (String(userData?.isPreferCategory) === "SKIP") {
+            if (isOpenModalRef.current) {
+                isOpenModalRef.current.close();
+            }
         }
-    };
+    }, [userData]);
 
-    useEffect(() => {
-        loadUserData();
-    }, []);
-
-    if (loading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#6DB777"/>
-            </View>
-        );
-    }
 
     if (!userData) {
         return (
             <View style={styles.container}>
-                <Text>사용자 데이터를 불러올 수 없습니다. 다시 시도해주세요.</Text>
+                <ActivityIndicator size="large" color="#6DB777"/>
             </View>
         );
     }
@@ -63,6 +52,7 @@ const HomeScreen = ({navigation}) => {
                 <BestPlaceComponent/>
                 <MyStyleGroupComponent/>
             </ScrollView>
+            <PreferCategoryModal ref={isOpenModalRef}/>
         </View>
     );
 };

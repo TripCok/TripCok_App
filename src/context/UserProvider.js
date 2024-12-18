@@ -15,7 +15,7 @@ const UserProvider = ({ children }) => {
                 params: { id, email },
             });
             if (response.status === 200) {
-                return response.data; // 사용자 데이터 반환
+                return response.data;
             } else {
                 throw new Error("Invalid credentials");
             }

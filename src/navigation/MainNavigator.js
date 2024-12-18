@@ -14,6 +14,7 @@ import CommentListScreen from "../screens/Group/CommentListScreen";
 import CreatePost from "../screens/Group/CreatePostScreen";
 import GroupPlaceScreen from "../screens/Group/GroupPlaceScreen";
 import GroupPlaceListScreen from "../screens/Group/GroupPlaceListScreen";
+import PreferCategoryScreen from "../screens/PreferCategoryScreen";
 
 const Drawer = createDrawerNavigator();
 const GroupStack = createStackNavigator();
@@ -50,6 +51,7 @@ const MainNavigator = () => {
             screenOptions={{headerShown: false, drawerPosition: "left"}}
             drawerContent={(props) => <CustomDrawer {...props} />}>
             <Drawer.Screen name="Home" component={HomeScreen}/>
+            <Drawer.Screen name="PreferCategoryScreen" component={PreferCategoryScreen}/>
             <Drawer.Screen name="PlaceStack" component={PlaceStackNavigator}/>
             <Drawer.Screen name="GroupStack" component={GroupStackNavigator}/>
             <Drawer.Screen name="GroupCreate" component={CreateGroupScreen}/>

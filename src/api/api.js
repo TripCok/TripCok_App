@@ -7,7 +7,7 @@ const sv_api = "52.79.199.83";
 // Axios 인스턴스 생성
 const api = axios.create({
 
-    baseURL: `http://${sv_api}:9090/api/v1`, // 공통 API 주소
+    baseURL: `http://${sv_api}:9090/api/v1`,
     headers: {
         'Content-Type': 'application/json',
     },
