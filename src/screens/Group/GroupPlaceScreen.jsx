@@ -17,6 +17,7 @@ const GroupPlaceScreen = ({route, navigation}) => {
     const mapRef = useRef(null);
     const flatListRef = useRef(null);
     const {userData} = useContext(UserContext);
+    const [viewPosition, setViewPosition] = useState(null);
 
     // 그룹 장소 데이터 로드
     useEffect(() => {
@@ -75,6 +76,13 @@ const GroupPlaceScreen = ({route, navigation}) => {
                 latitudeDelta: 0.005,
                 longitudeDelta: 0.005,
             });
+
+            setViewPosition({
+                latitude: parseFloat(firstPlace.placeLatitude),
+                longitude: parseFloat(firstPlace.placeLongitude),
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005,
+            })
         }
     }, [places]); // places 변경 시만 실행
 
@@ -126,36 +134,34 @@ const GroupPlaceScreen = ({route, navigation}) => {
         }
     };
 
-    const handleRegionChangeComplete = (region) => {
-        setCurrentRegion(region); // 화면 중심 업데이트
-        fetchPlacesInRegion(region); // 지도 경계 내 장소 가져오기
-    };
-
     const fetchPlacesInRegion = async (region) => {
+        region = viewPosition;
         const north = region.latitude + region.latitudeDelta / 2;
         const south = region.latitude - region.latitudeDelta / 2;
         const east = region.longitude + region.longitudeDelta / 2;
         const west = region.longitude - region.longitudeDelta / 2;
 
+
+        console.log(north, south, west, east);
         try {
             const response = await api.get('/place/placeInRegion', {
-                params: {north, south, east, west},
+                params: {
+                    "north":north,
+                    "south":south,
+                    "east":east,
+                    "west":west
+                },
+
             });
-
-            if (response.status !== 200) {
-                console.error('Failed to fetch places in region:', response.statusText);
-                setSearchPlaces([]);
-                return;
-            }
-
             const data = Array.isArray(response.data) ? response.data : [];
-            setSearchPlaces(data); // 검색된 장소 업데이트
+            console.log(data);
+            setSearchPlaces(data);
+
         } catch (error) {
             console.error('Error fetching places in region:', error);
             setSearchPlaces([]);
         }
     };
-
 
 
     return (
@@ -164,15 +170,22 @@ const GroupPlaceScreen = ({route, navigation}) => {
                 navigation={navigation}
                 groupOwnerId={groupOwnerId}
                 groupId={groupId}
-                funcGCL={goCurrentLocation} // 현재 위치 이동
-                funcHRC={fetchPlacesInRegion} // 지도 경계 내 장소 검색
+                funcGCL={goCurrentLocation}
+                funcHRC={() => fetchPlacesInRegion(currentRegion)} // 현 위치에서 장소 찾기
             />
 
             {isLoading && <ActivityIndicator size="large" color="#6DB777" style={styles.loading}/>}
 
             {currentRegion && (
-                <MapView ref={mapRef} style={styles.map} region={currentRegion}>
-                    {/* 그룹 장소 마커 */}
+                <MapView
+                    ref={mapRef}
+                    style={styles.map}
+                    region={currentRegion}
+                    onRegionChangeComplete={(region) => {
+                        setViewPosition(region)
+                    }}
+                >
+                    {/* 그룹에 등록된 장소 마커 */}
                     {places.map((place, index) => (
                         <Marker
                             key={index}
@@ -189,6 +202,7 @@ const GroupPlaceScreen = ({route, navigation}) => {
                             />
                         </Marker>
                     ))}
+                    {/* 현 위치에서 검색된 장소 마커 */}
                     {searchPlaces.map((place, index) => (
                         <Marker
                             key={index}

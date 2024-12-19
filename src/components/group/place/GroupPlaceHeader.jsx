@@ -1,7 +1,6 @@
 import React, {useContext, useState} from 'react';
-import {StyleSheet, TextInput, TouchableOpacity, View, Text, Dimensions, ScrollView} from "react-native";
+import {Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View} from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
-import IconM from "react-native-vector-icons/MaterialCommunityIcons";
 import GroupPlaceOrderModal from "./GroupPlaceOrderModal";
 import GroupPlaceSearch from "./GroupPlaceSearch";
 import {UserContext} from "../../../context/UserContext";
@@ -70,11 +69,11 @@ const GroupPlaceHeader = ({navigation, groupOwnerId, groupId, funcGCL, funcHRC})
                     <Icon name="navigate-outline" size={18} color="white"></Icon>
                     <Text style={{color: 'white'}}> 내 위치 </Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.adminGroupPlaceBox} onPress={() => funcHRC()}>
-                    <Icon name="locate" size={18} color="white"></Icon>
+                <TouchableOpacity style={styles.adminGroupPlaceBox} onPress={funcHRC}>
+                    <Icon name="locate" size={18} color="white"/>
                     <Text style={{color: 'white'}}> 현 위치에서 장소 찾기 </Text>
                 </TouchableOpacity>
-                {groupOwnerId == userData.id && (
+                {groupOwnerId === userData.id && (
                     <TouchableOpacity style={styles.adminGroupPlaceBox}>
                         <Icon name="golf-outline" size={16} color="white"></Icon>
                         <Text style={{color: 'white'}}> 장소 추천 </Text>

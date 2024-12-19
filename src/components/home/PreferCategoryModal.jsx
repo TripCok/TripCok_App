@@ -31,7 +31,7 @@ const PreferCategoryModal = forwardRef((props, ref) => {
             if (response.status === 200) {
                 ref.current?.close();
             } else {
-                 alert(response.data);
+                alert(response.data);
             }
         } catch (error) {
             console.error("Error saving categories:", error);
@@ -92,7 +92,10 @@ const PreferCategoryModal = forwardRef((props, ref) => {
                     marginBottom: 20,
                     alignItems: 'center'
                 }}>
-                    <Text style={{fontSize: 18,}}>선호 하는 관심사를 선택해주세요!</Text>
+                    <View>
+                        <Text style={{fontSize: 18,}}>회원님에게 더 좋은 여행지 제공을 위해</Text>
+                        <Text style={{fontSize: 18,}}>선호 하는 관심사를 선택해주세요! 🎉</Text>
+                    </View>
                     <TouchableOpacity onPress={updatePreferCategorySkip}>
                         <Text style={{fontSize: 16, color: '#d2d2d2'}}>Skip</Text>
                     </TouchableOpacity>
@@ -147,7 +150,7 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     scrollView: {
-        height: SCREEN_HEIGHT * 0.679,
+        height: SCREEN_HEIGHT * 0.64,
         width: '100%',
         marginBottom: 10
     },

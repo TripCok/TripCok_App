@@ -46,6 +46,7 @@ const PlaceCards = ({navigation}) => {
 
             if (response.status === 200) {
                 const data = response.data.content;
+                console.log(data[5]);
 
                 const formattedData = data.map((item) => ({
                     id: item.id.toString(),
