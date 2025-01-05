@@ -13,8 +13,8 @@ const GroupPlaceListScreen = ({route, navigation}) => {
 
     const fetchGroups = useCallback(async () => {
         try {
-            const response = await api.get(`/group/place/${groupId}/all`, {
-                params: {size: 100, page: 0},
+            const response = await api.get(`/group/place/all`, {
+                params: {size: 100, page: 0, groupId: groupId},
             });
 
             if (response.status === 200) {
